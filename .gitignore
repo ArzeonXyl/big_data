@@ -27,3 +27,6 @@ Thumbs.db
 # IDE files
 .vscode/
 .idea/
+
+data.rar
+*.rar
