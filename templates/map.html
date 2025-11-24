@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Map - Segmentasi</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+  #map { height: 80vh; width: 100%; }
+  .legend i { width: 15px; height: 15px; display: inline-block; margin-right: 5px; }
+</style>
+</head>
+<body class="bg-gray-100">
+
+<!-- Include Navbar -->
+{% include 'navbar.html' %}
+
+<!-- Filter Controls -->
+<div class="p-4 bg-white shadow-md m-4 rounded-lg flex flex-wrap gap-2 items-center">
+  <div>
+    <label class="text-sm font-medium">Month:</label>
+    <select id="month" class="ml-1 px-2 py-1 border rounded">
+      <option value="">All</option>
+      {% for m in range(1,13) %}
+      <option value="{{m}}">{{m}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="text-sm font-medium">Cluster Spend:</label>
+    <select id="cluster_spend" class="ml-1 px-2 py-1 border rounded">
+      <option value="">All</option>
+      <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option>
+    </select>
+  </div>
+  <div>
+    <label class="text-sm font-medium">Label Spend:</label>
+    <select id="label_spend" class="ml-1 px-2 py-1 border rounded"><option value="">All</option></select>
+  </div>
+  <div>
+    <label class="text-sm font-medium">Cluster Geo:</label>
+    <select id="cluster_geo" class="ml-1 px-2 py-1 border rounded">
+      <option value="">All</option>
+      <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option>
+    </select>
+  </div>
+  <div>
+    <label class="text-sm font-medium">Label Geo:</label>
+    <select id="label_geo" class="ml-1 px-2 py-1 border rounded"><option value="">All</option></select>
+  </div>
+  <button id="applyFilter" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Apply Filter</button>
+  <span id="total" class="ml-4 font-medium"></span>
+</div>
+
+<!-- Map -->
+<div id="map" class="rounded-lg shadow-md m-4"></div>
+
+<script>
+var map = L.map('map').setView([0,0], 2);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'OSM'}).addTo(map);
+var markerCluster = L.markerClusterGroup();
+map.addLayer(markerCluster);
+
+// Colors
+var clusterSpendColors = {0:'blue',1:'green',2:'orange',3:'red'};
+var clusterGeoColors = {0:'purple',1:'pink',2:'yellow',3:'brown'};
+
+// Merchant icon
+var merchantIcon = L.divIcon({html:'<i class="fa-solid fa-store text-red-600 text-xl"></i>', iconSize:[20,20], className:''});
+
+// Hamburger toggle (from navbar.html)
+if(document.getElementById('mobile-menu-button')){
+  document.getElementById('mobile-menu-button').addEventListener('click', function(){
+    const menu = document.getElementById('mobile-menu');
+    menu.classList.toggle('hidden');
+  });
+}
+
+function updateLabels(data){
+    var labelsSpend = [...new Set(data.records_sample.map(d=>d.label))];
+    $('#label_spend').html('<option value="">All</option>'+labelsSpend.map(l=>`<option value="${l}">${l}</option>`));
+    var labelsGeo = [...new Set(data.records_sample.map(d=>d.label_geo_dim2))];
+    $('#label_geo').html('<option value="">All</option>'+labelsGeo.map(l=>`<option value="${l}">${l}</option>`));
+}
+
+function renderMap(data){
+    markerCluster.clearLayers();
+    data.records_sample.forEach(d=>{
+        if(d.lat && d.long){
+            var color = clusterSpendColors[d.cluster_spend] || 'gray';
+            var distance = d.distance_km != null ? d.distance_km.toFixed(2) : '-';
+            var popupHtml = `Spend: ${d.cluster_spend} (${d.label})<br>
+                             Geo: ${d.cluster_geo_dim2} (${d.label_geo_dim2})<br>
+                             Distance: ${distance} km`;
+            var marker = L.circleMarker([d.lat,d.long], {radius:6, color:color, fillColor:color, fillOpacity:0.7})
+                .bindPopup(popupHtml);
+            markerCluster.addLayer(marker);
+
+            if(d.merch_lat && d.merch_long){
+                L.marker([d.merch_lat,d.merch_long], {icon: merchantIcon})
+                 .bindPopup(`Merchant at ${d.merch_lat},${d.merch_long}`)
+                 .addTo(markerCluster);
+            }
+        }
+    });
+    $('#total').text('Total records: '+data.total);
+}
+
+function addLegend(){
+    var legend = L.control({position:'bottomright'});
+    legend.onAdd = function(map){
+        var div = L.DomUtil.create('div','info legend p-2 bg-white rounded shadow-md');
+        div.innerHTML = '<b>Cluster Spend</b><br>';
+        for(var key in clusterSpendColors){
+            div.innerHTML += `<i style="background:${clusterSpendColors[key]}"></i> ${key}<br>`;
+        }
+        div.innerHTML += '<b>Cluster Geo</b><br>';
+        for(var key in clusterGeoColors){
+            div.innerHTML += `<i style="background:${clusterGeoColors[key]}"></i> ${key}<br>`;
+        }
+        return div;
+    };
+    legend.addTo(map);
+}
+
+function loadData(){
+    var params = {
+        month: $('#month').val(),
+        cluster_spend: $('#cluster_spend').val(),
+        label_spend: $('#label_spend').val(),
+        cluster_geo: $('#cluster_geo').val(),
+        label_geo: $('#label_geo').val()
+    };
+    $.getJSON('/get_data', params, function(data){
+        if(data.records_sample && data.records_sample.length>0){
+            updateLabels(data);
+            renderMap(data);
+            if(data.summary) console.log('Summary per zone:', data.summary);
+        } else {
+            markerCluster.clearLayers();
+            $('#total').text('No records found.');
+        }
+    });
+}
+
+$('#applyFilter').click(loadData);
+$(document).ready(function(){ loadData(); addLegend(); });
+</script>
+</body>
+</html>
