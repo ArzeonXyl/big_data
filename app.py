@@ -1,11 +1,80 @@
 from flask import Flask, render_template, request, jsonify
 import pandas as pd
+import pickle
+import json
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
 # Load data sekali saat server start dari pickle
 data_segmentasi = pd.read_pickle("data/data_segmentasi.pkl")
 data_segmentasi['month'] = data_segmentasi['trans_datetime'].dt.month
+
+# Load model SARIMAX
+try:
+    import os
+    model_path = os.path.join('data', 'model_sarimax_transaksi.pkl')
+    with open(model_path, 'rb') as f:
+        model_sarimax = pickle.load(f)
+    print(f"Model SARIMAX loaded successfully from {model_path}!")
+    print(f"Model type: {type(model_sarimax)}")
+    
+    # Hitung data transaksi per hari untuk evaluasi
+    daily_transactions = data_segmentasi.groupby(data_segmentasi['trans_datetime'].dt.date).size()
+    print(f"Daily transactions data: {len(daily_transactions)} days")
+except Exception as e:
+    model_sarimax = None
+    daily_transactions = None
+    print(f"Warning: Could not load SARIMAX model: {e}")
+
+# Fungsi untuk calculate error metrics
+def calculate_error_metrics(actual, predicted):
+    """Calculate RMSE, MAE, MAPE for model evaluation"""
+    import numpy as np
+    from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+    
+    # Convert to numpy arrays and handle NaN
+    actual = np.array(actual, dtype=float)
+    predicted = np.array(predicted, dtype=float)
+    
+    # Remove any NaN or infinite values
+    mask = np.isfinite(actual) & np.isfinite(predicted)
+    if not np.any(mask):
+        return None
+    
+    actual = actual[mask]
+    predicted = predicted[mask]
+    
+    if len(actual) < 2:
+        return None
+    
+    try:
+        # RMSE
+        rmse = np.sqrt(mean_squared_error(actual, predicted))
+        
+        # MAE
+        mae = mean_absolute_error(actual, predicted)
+        
+        # MAPE - avoid division by zero
+        mape_mask = actual != 0
+        if np.any(mape_mask):
+            mape = np.mean(np.abs((actual[mape_mask] - predicted[mape_mask]) / actual[mape_mask])) * 100
+        else:
+            mape = 0.0
+        
+        # R²
+        r2 = r2_score(actual, predicted)
+        
+        # Replace NaN with None for JSON serialization
+        return {
+            'rmse': float(rmse) if np.isfinite(rmse) else None,
+            'mae': float(mae) if np.isfinite(mae) else None,
+            'mape': float(mape) if np.isfinite(mape) else None,
+            'r2': float(r2) if np.isfinite(r2) else None
+        }
+    except Exception as e:
+        print(f"Error calculating metrics: {e}")
+        return None
 
 # Fungsi generate data untuk map
 def get_map_data(month=None, cluster_spend=None, label_spend=None,
@@ -45,8 +114,230 @@ def home():
 
 @app.route("/prediksi")
 def prediksi():
-    # Halaman prediksi kosong atau placeholder
-    return render_template("prediksi.html")
+    # Get cluster info untuk option di form
+    cluster_info = {
+        'cluster_spend': sorted(data_segmentasi['cluster_spend'].unique().tolist()),
+        'cluster_geo': sorted(data_segmentasi['cluster_geo_dim2'].unique().tolist())
+    }
+    return render_template("prediksi.html", cluster_info=cluster_info)
+
+@app.route("/prediksi/run", methods=['POST'])
+def run_prediksi():
+    if model_sarimax is None:
+        return jsonify({'error': 'Model belum dimuat. Pastikan file model_sarimax_transaksi.pkl ada di folder data/'}), 500
+    
+    try:
+        # Ambil parameter dari request
+        data = request.json
+        steps = int(data.get('steps', 7))  # Default 7 hari ke depan
+        user_data = data.get('user_data', None)  # Data transaksi dari user
+        cluster_spend = data.get('cluster_spend', None)  # Filter by cluster
+        cluster_geo = data.get('cluster_geo', None)  # Filter by geo cluster
+        
+        # Jika user input data sendiri, gunakan itu sebagai basis
+        if user_data and len(user_data) > 0:
+            # User memberikan data historis sendiri
+            import numpy as np
+            user_values = [float(d['value']) for d in user_data]
+            
+            # Lakukan prediksi dari data user
+            forecast = model_sarimax.forecast(steps=steps)
+            
+            # Adjust forecast berdasarkan rata-rata data user vs data training
+            user_avg = np.mean(user_values)
+            training_avg = daily_transactions.mean() if daily_transactions is not None else user_avg
+            adjustment_factor = user_avg / training_avg if training_avg > 0 else 1
+            
+            adjusted_forecast = forecast * adjustment_factor
+            
+            # Buat tanggal untuk hasil prediksi
+            last_date_str = user_data[-1]['date']
+            last_date = datetime.strptime(last_date_str, '%Y-%m-%d')
+            future_dates = [last_date + timedelta(days=i+1) for i in range(steps)]
+            
+            # Calculate error metrics on user data (backtesting)
+            split_idx = int(len(user_values) * 0.7)
+            if split_idx > 0 and len(user_values) > split_idx:
+                test_actual = user_values[split_idx:]
+                test_steps = len(test_actual)
+                test_forecast = model_sarimax.forecast(steps=test_steps)
+                test_forecast_adjusted = test_forecast * adjustment_factor
+                
+                error_metrics = calculate_error_metrics(test_actual, test_forecast_adjusted[:len(test_actual)])
+            else:
+                error_metrics = None
+            
+            # Format hasil
+            results = []
+            for date, value in zip(future_dates, adjusted_forecast):
+                results.append({
+                    'date': date.strftime('%Y-%m-%d'),
+                    'predicted_transactions': float(value)
+                })
+            
+            # Get model goodness of fit
+            goodness_of_fit = {
+                'aic': float(model_sarimax.aic) if hasattr(model_sarimax, 'aic') else None,
+                'bic': float(model_sarimax.bic) if hasattr(model_sarimax, 'bic') else None,
+                'hqic': float(model_sarimax.hqic) if hasattr(model_sarimax, 'hqic') else None,
+            }
+            
+            return jsonify({
+                'success': True,
+                'predictions': results,
+                'model_type': 'SARIMAX (Adjusted)',
+                'last_actual_date': last_date.strftime('%Y-%m-%d'),
+                'adjustment_info': f'Adjusted by factor {adjustment_factor:.2f} (avg: {user_avg:.0f} vs training: {training_avg:.0f})',
+                'error_metrics': error_metrics,
+                'goodness_of_fit': goodness_of_fit
+            })
+        else:
+            # Gunakan data default dari dataset dengan filter cluster jika ada
+            import numpy as np
+            
+            df_filtered = data_segmentasi.copy()
+            filter_info = []
+            
+            # Apply cluster filters untuk analisis lebih spesifik
+            if cluster_spend is not None:
+                df_filtered = df_filtered[df_filtered['cluster_spend'] == int(cluster_spend)]
+                filter_info.append(f"Cluster Spend {cluster_spend}")
+            
+            if cluster_geo is not None:
+                df_filtered = df_filtered[df_filtered['cluster_geo_dim2'] == int(cluster_geo)]
+                filter_info.append(f"Cluster Geo {cluster_geo}")
+            
+            # Hitung daily transactions dari filtered data
+            if len(df_filtered) > 0:
+                daily_trans_filtered = df_filtered.groupby(df_filtered['trans_datetime'].dt.date).size()
+                
+                # Calculate adjustment factor berdasarkan cluster pattern
+                if len(filter_info) > 0:
+                    cluster_avg = daily_trans_filtered.mean()
+                    overall_avg = daily_transactions.mean() if daily_transactions is not None else cluster_avg
+                    adjustment_factor = cluster_avg / overall_avg if overall_avg > 0 else 1
+                else:
+                    adjustment_factor = 1
+                    daily_trans_filtered = daily_transactions
+            else:
+                daily_trans_filtered = daily_transactions
+                adjustment_factor = 1
+            
+            # Lakukan prediksi
+            forecast = model_sarimax.forecast(steps=steps)
+            
+            # Apply adjustment jika ada filter
+            if adjustment_factor != 1:
+                forecast = forecast * adjustment_factor
+            
+            # Buat tanggal untuk hasil prediksi
+            last_date = data_segmentasi['trans_datetime'].max()
+            future_dates = [last_date + timedelta(days=i+1) for i in range(steps)]
+            
+            # Calculate error metrics on test set (last 30% of data)
+            if daily_trans_filtered is not None and len(daily_trans_filtered) > 10:
+                split_idx = int(len(daily_trans_filtered) * 0.7)
+                test_actual = daily_trans_filtered.values[split_idx:]
+                test_steps = min(len(test_actual), 30)  # Limit test steps
+                
+                # Get forecast for test period
+                test_forecast = model_sarimax.forecast(steps=test_steps)
+                if adjustment_factor != 1:
+                    test_forecast = test_forecast * adjustment_factor
+                
+                error_metrics = calculate_error_metrics(test_actual[:test_steps], test_forecast[:test_steps])
+            else:
+                error_metrics = None
+            
+            # Format hasil
+            results = []
+            for date, value in zip(future_dates, forecast):
+                results.append({
+                    'date': date.strftime('%Y-%m-%d'),
+                    'predicted_transactions': float(value)
+                })
+            
+            # Get model goodness of fit
+            goodness_of_fit = {
+                'aic': float(model_sarimax.aic) if hasattr(model_sarimax, 'aic') else None,
+                'bic': float(model_sarimax.bic) if hasattr(model_sarimax, 'bic') else None,
+                'hqic': float(model_sarimax.hqic) if hasattr(model_sarimax, 'hqic') else None,
+            }
+            
+            # Build model type description
+            if len(filter_info) > 0:
+                model_type = f"SARIMAX ({', '.join(filter_info)})"
+                adjustment_info = f"Adjusted by factor {adjustment_factor:.2f} based on cluster pattern"
+            else:
+                model_type = "SARIMAX"
+                adjustment_info = None
+            
+            response = {
+                'success': True,
+                'predictions': results,
+                'model_type': model_type,
+                'last_actual_date': last_date.strftime('%Y-%m-%d'),
+                'error_metrics': error_metrics,
+                'goodness_of_fit': goodness_of_fit
+            }
+            
+            if adjustment_info:
+                response['adjustment_info'] = adjustment_info
+            
+            return jsonify(response)
+    
+    except Exception as e:
+        import traceback
+        return jsonify({'error': str(e), 'traceback': traceback.format_exc()}), 500
+
+@app.route("/segmentasi")
+def segmentasi():
+    # Halaman segmentasi dengan data dari data_segmentasi.pkl
+    return render_template("segmentasi.html")
+
+@app.route("/segmentasi/data")
+def segmentasi_data():
+    # API untuk mendapatkan data segmentasi
+    try:
+        # Ambil parameter filter
+        cluster_spend = request.args.get('cluster_spend', type=int)
+        cluster_geo = request.args.get('cluster_geo', type=int)
+        limit = request.args.get('limit', default=100, type=int)
+        
+        df = data_segmentasi.copy()
+        
+        # Apply filters
+        if cluster_spend is not None:
+            df = df[df['cluster_spend'] == cluster_spend]
+        if cluster_geo is not None:
+            df = df[df['cluster_geo_dim2'] == cluster_geo]
+        
+        # Get summary statistics
+        summary = {
+            'total_records': len(df),
+            'cluster_spend_counts': df['cluster_spend'].value_counts().to_dict(),
+            'cluster_geo_counts': df['cluster_geo_dim2'].value_counts().to_dict(),
+            'label_spend_counts': df['label'].value_counts().to_dict(),
+            'label_geo_counts': df['label_geo_dim2'].value_counts().to_dict(),
+            'avg_distance': float(df['distance_km'].mean()) if 'distance_km' in df.columns else 0
+        }
+        
+        # Sample data untuk ditampilkan
+        sample_data = df.head(limit).to_dict(orient='records')
+        
+        # Convert timestamps to string
+        for record in sample_data:
+            if 'trans_datetime' in record and record['trans_datetime']:
+                record['trans_datetime'] = record['trans_datetime'].strftime('%Y-%m-%d %H:%M:%S')
+        
+        return jsonify({
+            'success': True,
+            'summary': summary,
+            'data': sample_data
+        })
+    except Exception as e:
+        import traceback
+        return jsonify({'error': str(e), 'traceback': traceback.format_exc()}), 500
 
 @app.route("/map")
 def map_view():

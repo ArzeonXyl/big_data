@@ -5,3 +5,5 @@ numpy
 python-dateutil
 pytz
 requests
+statsmodels
+scikit-learn

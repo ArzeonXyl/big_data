@@ -1,26 +1,644 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prediksi - BigData Dashboard</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-</head>
-<body class="bg-gray-100">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prediksi - BigData Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+  </head>
+  <body class="bg-gray-100">
+    <!-- Navbar include -->
+    {% include 'navbar.html' %}
 
-<!-- Navbar include -->
-{% include 'navbar.html' %}
+    <div class="max-w-7xl mx-auto p-6">
+      <h1 class="text-3xl font-bold mb-4">Prediksi Transaksi</h1>
+      <p class="text-gray-700 mb-4">
+        Prediksi jumlah transaksi menggunakan model SARIMAX (Time Series
+        Regression)
+      </p>
 
-<div class="max-w-7xl mx-auto p-6">
-  <h1 class="text-3xl font-bold mb-4">Prediksi</h1>
-  <p class="text-gray-700 mb-4">Halaman ini untuk input data prediksi dan menampilkan hasil prediksi.</p>
+      <!-- Info Box: Penjelasan Mode -->
+      <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+        <h3 class="font-semibold text-blue-800 mb-2">
+          <i class="fas fa-info-circle mr-2"></i>Perbedaan Mode Input:
+        </h3>
+        <ul class="text-sm text-blue-700 space-y-1">
+          <li>
+            <strong>Data Default:</strong> Menggunakan data historis dari
+            dataset training (data uji perusahaan). Cocok untuk proyeksi umum.
+          </li>
+          <li>
+            <strong>Input Sendiri:</strong> Input data transaksi Anda sendiri
+            (min. 3 hari). Model akan menyesuaikan prediksi dengan pola data
+            Anda.
+          </li>
+        </ul>
+      </div>
 
-  <!-- Placeholder konten prediksi -->
-  <div class="bg-white shadow-md rounded-lg p-6">
-    <p class="text-gray-500 italic">Form input atau grafik prediksi akan muncul di sini.</p>
-  </div>
-</div>
+      <!-- Form Input Prediksi -->
+      <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">
+          <i class="fas fa-chart-line mr-2"></i>Input Data Transaksi Anda
+        </h2>
 
-</body>
+        <!-- Toggle untuk pilih mode -->
+        <div class="mb-4">
+          <label class="block text-gray-700 font-medium mb-2">Mode Input</label>
+          <div class="flex gap-4">
+            <label class="flex items-center">
+              <input
+                type="radio"
+                name="inputMode"
+                value="default"
+                checked
+                onchange="toggleInputMode()"
+                class="mr-2"
+              />
+              <span>Gunakan Data Default</span>
+            </label>
+            <label class="flex items-center">
+              <input
+                type="radio"
+                name="inputMode"
+                value="custom"
+                onchange="toggleInputMode()"
+                class="mr-2"
+              />
+              <span>Input Data Sendiri</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Form untuk input data sendiri -->
+        <div id="customDataForm" class="hidden mb-4">
+          <div class="bg-gray-50 p-4 rounded-lg mb-4">
+            <h3 class="font-semibold mb-2">Input Data Historis Transaksi</h3>
+            <p class="text-sm text-gray-600 mb-3">
+              Masukkan jumlah transaksi per hari (minimal 3 hari) untuk prediksi
+              yang lebih akurat
+            </p>
+
+            <div id="dataInputs">
+              <!-- Row input akan ditambahkan di sini -->
+            </div>
+
+            <div class="flex gap-2 mt-3">
+              <button
+                onclick="addDataRow()"
+                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-sm"
+              >
+                <i class="fas fa-plus mr-1"></i>Tambah Data
+              </button>
+              <button
+                onclick="removeLastRow()"
+                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm"
+              >
+                <i class="fas fa-minus mr-1"></i>Hapus Terakhir
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced Options: Cluster Filtering -->
+        <div class="mb-4 bg-gray-50 p-4 rounded-lg">
+          <h3 class="font-semibold mb-3">
+            <i class="fas fa-sliders-h mr-2"></i>Opsi Lanjutan (Opsional)
+          </h3>
+          <p class="text-sm text-gray-600 mb-3">
+            Gunakan data segmentasi untuk prediksi yang lebih spesifik
+            berdasarkan cluster
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-gray-700 font-medium mb-2"
+                >Filter Cluster Spending</label
+              >
+              <select
+                id="clusterSpend"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              >
+                <option value="">Semua Cluster</option>
+                {% if cluster_info and cluster_info.cluster_spend %} {% for
+                cluster in cluster_info.cluster_spend %}
+                <option value="{{ cluster }}">Cluster {{ cluster }}</option>
+                {% endfor %} {% endif %}
+              </select>
+              <p class="text-xs text-gray-500 mt-1">
+                Prediksi berdasarkan pola spending tertentu
+              </p>
+            </div>
+
+            <div>
+              <label class="block text-gray-700 font-medium mb-2"
+                >Filter Cluster Geografis</label
+              >
+              <select
+                id="clusterGeo"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              >
+                <option value="">Semua Cluster</option>
+                {% if cluster_info and cluster_info.cluster_geo %} {% for
+                cluster in cluster_info.cluster_geo %}
+                <option value="{{ cluster }}">Cluster {{ cluster }}</option>
+                {% endfor %} {% endif %}
+              </select>
+              <p class="text-xs text-gray-500 mt-1">
+                Prediksi berdasarkan lokasi geografis
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 font-medium mb-2" for="steps">
+            Jumlah Periode Prediksi (hari ke depan)
+          </label>
+          <input
+            type="number"
+            id="steps"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Masukkan jumlah hari (default: 7)"
+            value="7"
+            min="1"
+            max="365"
+          />
+          <p class="text-gray-500 text-sm mt-1">
+            Prediksi untuk 1-365 hari ke depan
+          </p>
+        </div>
+
+        <button
+          onclick="runPrediksi()"
+          class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg transition duration-200"
+        >
+          <i class="fas fa-play mr-2"></i>Jalankan Prediksi
+        </button>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div
+        id="loading"
+        class="hidden bg-blue-50 border-l-4 border-blue-500 p-4 mb-6"
+      >
+        <p class="text-blue-700">
+          <i class="fas fa-spinner fa-spin mr-2"></i>Sedang memproses
+          prediksi...
+        </p>
+      </div>
+
+      <!-- Error Message -->
+      <div
+        id="error"
+        class="hidden bg-red-50 border-l-4 border-red-500 p-4 mb-6"
+      >
+        <p class="text-red-700">
+          <i class="fas fa-exclamation-circle mr-2"></i
+          ><span id="errorMsg"></span>
+        </p>
+      </div>
+
+      <!-- Hasil Prediksi -->
+      <div id="results" class="hidden">
+        <!-- Model Performance Metrics -->
+        <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+          <h2 class="text-xl font-semibold mb-4">
+            <i class="fas fa-chart-pie mr-2"></i>Model Performance & Goodness of
+            Fit
+          </h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Error Metrics -->
+            <div>
+              <h3 class="font-semibold text-gray-700 mb-3">Error Metrics</h3>
+              <div id="errorMetrics" class="space-y-2">
+                <!-- Will be populated by JS -->
+              </div>
+            </div>
+
+            <!-- Goodness of Fit -->
+            <div>
+              <h3 class="font-semibold text-gray-700 mb-3">Goodness of Fit</h3>
+              <div id="goodnessOfFit" class="space-y-2">
+                <!-- Will be populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 bg-gray-50 p-3 rounded text-sm text-gray-600">
+            <p><strong>Interpretasi:</strong></p>
+            <ul class="list-disc ml-5 mt-1 space-y-1">
+              <li>
+                <strong>RMSE/MAE:</strong> Semakin kecil semakin baik (error
+                lebih rendah)
+              </li>
+              <li>
+                <strong>MAPE:</strong> Persentase error, < 10% = sangat baik,
+                10-20% = baik, > 20% = cukup
+              </li>
+              <li>
+                <strong>R²:</strong> Semakin mendekati 1 semakin baik (model
+                menjelaskan data dengan baik)
+              </li>
+              <li>
+                <strong>AIC/BIC:</strong> Semakin kecil semakin baik (model
+                lebih optimal)
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+          <h2 class="text-xl font-semibold mb-4">
+            <i class="fas fa-chart-bar mr-2"></i>Hasil Prediksi
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div class="bg-blue-50 p-4 rounded-lg">
+              <p class="text-gray-600 text-sm">Model</p>
+              <p class="text-xl font-bold text-blue-600" id="modelType">
+                SARIMAX
+              </p>
+            </div>
+            <div class="bg-green-50 p-4 rounded-lg">
+              <p class="text-gray-600 text-sm">Tanggal Terakhir Data Aktual</p>
+              <p class="text-xl font-bold text-green-600" id="lastDate">-</p>
+            </div>
+            <div class="bg-purple-50 p-4 rounded-lg">
+              <p class="text-gray-600 text-sm">Jumlah Prediksi</p>
+              <p class="text-xl font-bold text-purple-600" id="predCount">-</p>
+            </div>
+          </div>
+
+          <div
+            id="adjustmentInfo"
+            class="hidden mb-4 bg-yellow-50 border-l-4 border-yellow-500 p-4"
+          >
+            <p class="text-yellow-700">
+              <i class="fas fa-info-circle mr-2"></i
+              ><span id="adjustmentText"></span>
+            </p>
+          </div>
+
+          <!-- Chart -->
+          <canvas id="predictionChart" class="w-full" height="100"></canvas>
+        </div>
+
+        <!-- Tabel Hasil -->
+        <div class="bg-white shadow-md rounded-lg p-6">
+          <h2 class="text-xl font-semibold mb-4">
+            <i class="fas fa-table mr-2"></i>Data Prediksi Detail
+          </h2>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    No
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Tanggal
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Prediksi Transaksi
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                id="tableBody"
+                class="bg-white divide-y divide-gray-200"
+              ></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+      let predictionChart = null;
+      let dataRowCount = 0;
+
+      // Fungsi untuk toggle mode input
+      function toggleInputMode() {
+        const mode = document.querySelector(
+          'input[name="inputMode"]:checked'
+        ).value;
+        const customForm = document.getElementById("customDataForm");
+
+        if (mode === "custom") {
+          customForm.classList.remove("hidden");
+          // Inisialisasi dengan 3 row default
+          if (dataRowCount === 0) {
+            addDataRow();
+            addDataRow();
+            addDataRow();
+          }
+        } else {
+          customForm.classList.add("hidden");
+        }
+      }
+
+      // Fungsi untuk menambah row input data
+      function addDataRow() {
+        dataRowCount++;
+        const container = document.getElementById("dataInputs");
+        const today = new Date();
+        const dateStr = new Date(
+          today.setDate(today.getDate() - dataRowCount + 1)
+        )
+          .toISOString()
+          .split("T")[0];
+
+        const row = document.createElement("div");
+        row.className = "flex gap-2 mb-2";
+        row.id = `dataRow${dataRowCount}`;
+        row.innerHTML = `
+          <input type="date" id="date${dataRowCount}" value="${dateStr}" 
+                 class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm">
+          <input type="number" id="value${dataRowCount}" placeholder="Jumlah transaksi" min="0" 
+                 class="flex-1 px-3 py-2 border border-gray-300 rounded text-sm">
+        `;
+        container.appendChild(row);
+      }
+
+      // Fungsi untuk hapus row terakhir
+      function removeLastRow() {
+        if (dataRowCount > 0) {
+          const row = document.getElementById(`dataRow${dataRowCount}`);
+          if (row) {
+            row.remove();
+            dataRowCount--;
+          }
+        }
+      }
+
+      // Fungsi untuk ambil data user
+      function getUserData() {
+        const mode = document.querySelector(
+          'input[name="inputMode"]:checked'
+        ).value;
+        if (mode === "default") {
+          return null;
+        }
+
+        const userData = [];
+        for (let i = 1; i <= dataRowCount; i++) {
+          const dateInput = document.getElementById(`date${i}`);
+          const valueInput = document.getElementById(`value${i}`);
+
+          if (dateInput && valueInput && valueInput.value) {
+            userData.push({
+              date: dateInput.value,
+              value: parseFloat(valueInput.value),
+            });
+          }
+        }
+
+        return userData.length > 0 ? userData : null;
+      }
+
+      function runPrediksi() {
+        const steps = document.getElementById("steps").value;
+        const userData = getUserData();
+        const clusterSpend = document.getElementById("clusterSpend").value;
+        const clusterGeo = document.getElementById("clusterGeo").value;
+
+        // Validasi jika mode custom tapi data kosong
+        const mode = document.querySelector(
+          'input[name="inputMode"]:checked'
+        ).value;
+        if (mode === "custom" && (!userData || userData.length < 3)) {
+          document.getElementById("errorMsg").textContent =
+            "Mohon input minimal 3 data transaksi historis";
+          document.getElementById("error").classList.remove("hidden");
+          return;
+        }
+
+        // Reset UI
+        document.getElementById("loading").classList.remove("hidden");
+        document.getElementById("error").classList.add("hidden");
+        document.getElementById("results").classList.add("hidden");
+
+        // Build request body
+        const requestBody = {
+          steps: parseInt(steps),
+          user_data: userData,
+        };
+
+        // Add cluster filters if selected (only for default mode)
+        if (mode === "default") {
+          if (clusterSpend) requestBody.cluster_spend = clusterSpend;
+          if (clusterGeo) requestBody.cluster_geo = clusterGeo;
+        }
+
+        // Call API
+        fetch("/prediksi/run", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("loading").classList.add("hidden");
+
+            if (data.error) {
+              document.getElementById("errorMsg").textContent = data.error;
+              document.getElementById("error").classList.remove("hidden");
+              return;
+            }
+
+            // Update Model Performance Metrics
+            if (data.error_metrics) {
+              const metrics = data.error_metrics;
+              document.getElementById("errorMetrics").innerHTML = `
+                <div class="bg-red-50 p-3 rounded">
+                  <p class="text-sm"><strong>RMSE:</strong> ${
+                    metrics.rmse !== null ? metrics.rmse.toFixed(2) : "N/A"
+                  }</p>
+                  <p class="text-xs text-gray-600">Root Mean Squared Error</p>
+                </div>
+                <div class="bg-orange-50 p-3 rounded">
+                  <p class="text-sm"><strong>MAE:</strong> ${
+                    metrics.mae !== null ? metrics.mae.toFixed(2) : "N/A"
+                  }</p>
+                  <p class="text-xs text-gray-600">Mean Absolute Error</p>
+                </div>
+                <div class="bg-yellow-50 p-3 rounded">
+                  <p class="text-sm"><strong>MAPE:</strong> ${
+                    metrics.mape !== null
+                      ? metrics.mape.toFixed(2) + "%"
+                      : "N/A"
+                  }</p>
+                  <p class="text-xs text-gray-600">Mean Absolute Percentage Error</p>
+                </div>
+                <div class="bg-green-50 p-3 rounded">
+                  <p class="text-sm"><strong>R²:</strong> ${
+                    metrics.r2 !== null ? metrics.r2.toFixed(4) : "N/A"
+                  }</p>
+                  <p class="text-xs text-gray-600">Coefficient of Determination</p>
+                </div>
+              `;
+            } else {
+              document.getElementById("errorMetrics").innerHTML = `
+                <p class="text-gray-500 text-sm">Error metrics tidak tersedia (data testing tidak cukup)</p>
+              `;
+            }
+
+            if (data.goodness_of_fit) {
+              const gof = data.goodness_of_fit;
+              document.getElementById("goodnessOfFit").innerHTML = `
+                ${
+                  gof.aic
+                    ? `<div class="bg-blue-50 p-3 rounded">
+                  <p class="text-sm"><strong>AIC:</strong> ${gof.aic.toFixed(
+                    2
+                  )}</p>
+                  <p class="text-xs text-gray-600">Akaike Information Criterion</p>
+                </div>`
+                    : ""
+                }
+                ${
+                  gof.bic
+                    ? `<div class="bg-indigo-50 p-3 rounded">
+                  <p class="text-sm"><strong>BIC:</strong> ${gof.bic.toFixed(
+                    2
+                  )}</p>
+                  <p class="text-xs text-gray-600">Bayesian Information Criterion</p>
+                </div>`
+                    : ""
+                }
+                ${
+                  gof.hqic
+                    ? `<div class="bg-purple-50 p-3 rounded">
+                  <p class="text-sm"><strong>HQIC:</strong> ${gof.hqic.toFixed(
+                    2
+                  )}</p>
+                  <p class="text-xs text-gray-600">Hannan-Quinn Information Criterion</p>
+                </div>`
+                    : ""
+                }
+              `;
+            }
+
+            // Update info
+            document.getElementById("modelType").textContent = data.model_type;
+            document.getElementById("lastDate").textContent =
+              data.last_actual_date;
+            document.getElementById("predCount").textContent =
+              data.predictions.length + " hari";
+
+            // Show adjustment info if available
+            if (data.adjustment_info) {
+              document.getElementById("adjustmentText").textContent =
+                data.adjustment_info;
+              document
+                .getElementById("adjustmentInfo")
+                .classList.remove("hidden");
+            } else {
+              document.getElementById("adjustmentInfo").classList.add("hidden");
+            }
+
+            // Update chart
+            const labels = data.predictions.map((p) => p.date);
+            const values = data.predictions.map(
+              (p) => p.predicted_transactions
+            );
+
+            if (predictionChart) {
+              predictionChart.destroy();
+            }
+
+            const ctx = document
+              .getElementById("predictionChart")
+              .getContext("2d");
+            predictionChart = new Chart(ctx, {
+              type: "line",
+              data: {
+                labels: labels,
+                datasets: [
+                  {
+                    label: "Prediksi Jumlah Transaksi",
+                    data: values,
+                    borderColor: "rgb(59, 130, 246)",
+                    backgroundColor: "rgba(59, 130, 246, 0.1)",
+                    tension: 0.4,
+                    fill: true,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: "top",
+                  },
+                  title: {
+                    display: true,
+                    text: "Grafik Prediksi Transaksi",
+                  },
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    title: {
+                      display: true,
+                      text: "Jumlah Transaksi",
+                    },
+                  },
+                  x: {
+                    title: {
+                      display: true,
+                      text: "Tanggal",
+                    },
+                  },
+                },
+              },
+            });
+
+            // Update table
+            const tableBody = document.getElementById("tableBody");
+            tableBody.innerHTML = "";
+            data.predictions.forEach((pred, index) => {
+              const row = `
+        <tr class="${index % 2 === 0 ? "bg-white" : "bg-gray-50"}">
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${
+            index + 1
+          }</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${
+            pred.date
+          }</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+            ${Math.round(pred.predicted_transactions).toLocaleString()}
+          </td>
+        </tr>
+      `;
+              tableBody.innerHTML += row;
+            });
+
+            // Show results
+            document.getElementById("results").classList.remove("hidden");
+          })
+          .catch((error) => {
+            document.getElementById("loading").classList.add("hidden");
+            document.getElementById("errorMsg").textContent =
+              "Terjadi kesalahan: " + error.message;
+            document.getElementById("error").classList.remove("hidden");
+          });
+      }
+    </script>
+  </body>
 </html>
