@@ -103,57 +103,6 @@
           </div>
         </div>
 
-        <!-- Advanced Options: Cluster Filtering -->
-        <div class="mb-4 bg-gray-50 p-4 rounded-lg">
-          <h3 class="font-semibold mb-3">
-            <i class="fas fa-sliders-h mr-2"></i>Opsi Lanjutan (Opsional)
-          </h3>
-          <p class="text-sm text-gray-600 mb-3">
-            Gunakan data segmentasi untuk prediksi yang lebih spesifik
-            berdasarkan cluster
-          </p>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-gray-700 font-medium mb-2"
-                >Filter Cluster Spending</label
-              >
-              <select
-                id="clusterSpend"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg"
-              >
-                <option value="">Semua Cluster</option>
-                {% if cluster_info and cluster_info.cluster_spend %} {% for
-                cluster in cluster_info.cluster_spend %}
-                <option value="{{ cluster }}">Cluster {{ cluster }}</option>
-                {% endfor %} {% endif %}
-              </select>
-              <p class="text-xs text-gray-500 mt-1">
-                Prediksi berdasarkan pola spending tertentu
-              </p>
-            </div>
-
-            <div>
-              <label class="block text-gray-700 font-medium mb-2"
-                >Filter Cluster Geografis</label
-              >
-              <select
-                id="clusterGeo"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg"
-              >
-                <option value="">Semua Cluster</option>
-                {% if cluster_info and cluster_info.cluster_geo %} {% for
-                cluster in cluster_info.cluster_geo %}
-                <option value="{{ cluster }}">Cluster {{ cluster }}</option>
-                {% endfor %} {% endif %}
-              </select>
-              <p class="text-xs text-gray-500 mt-1">
-                Prediksi berdasarkan lokasi geografis
-              </p>
-            </div>
-          </div>
-        </div>
-
         <div class="mb-4">
           <label class="block text-gray-700 font-medium mb-2" for="steps">
             Jumlah Periode Prediksi (hari ke depan)
@@ -211,15 +160,7 @@
             Fit
           </h2>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Error Metrics -->
-            <div>
-              <h3 class="font-semibold text-gray-700 mb-3">Error Metrics</h3>
-              <div id="errorMetrics" class="space-y-2">
-                <!-- Will be populated by JS -->
-              </div>
-            </div>
-
+          <div class="grid grid-cols-1 gap-6">
             <!-- Goodness of Fit -->
             <div>
               <h3 class="font-semibold text-gray-700 mb-3">Goodness of Fit</h3>
@@ -233,20 +174,11 @@
             <p><strong>Interpretasi:</strong></p>
             <ul class="list-disc ml-5 mt-1 space-y-1">
               <li>
-                <strong>RMSE/MAE:</strong> Semakin kecil semakin baik (error
-                lebih rendah)
+                <strong>AIC/BIC/HQIC:</strong> Semakin kecil semakin baik (model
+                lebih optimal dan efisien)
               </li>
               <li>
-                <strong>MAPE:</strong> Persentase error, < 10% = sangat baik,
-                10-20% = baik, > 20% = cukup
-              </li>
-              <li>
-                <strong>R²:</strong> Semakin mendekati 1 semakin baik (model
-                menjelaskan data dengan baik)
-              </li>
-              <li>
-                <strong>AIC/BIC:</strong> Semakin kecil semakin baik (model
-                lebih optimal)
+                Model menggunakan SARIMAX untuk prediksi time series dengan performa optimal
               </li>
             </ul>
           </div>
@@ -412,8 +344,6 @@
       function runPrediksi() {
         const steps = document.getElementById("steps").value;
         const userData = getUserData();
-        const clusterSpend = document.getElementById("clusterSpend").value;
-        const clusterGeo = document.getElementById("clusterGeo").value;
 
         // Validasi jika mode custom tapi data kosong
         const mode = document.querySelector(
@@ -437,12 +367,6 @@
           user_data: userData,
         };
 
-        // Add cluster filters if selected (only for default mode)
-        if (mode === "default") {
-          if (clusterSpend) requestBody.cluster_spend = clusterSpend;
-          if (clusterGeo) requestBody.cluster_geo = clusterGeo;
-        }
-
         // Call API
         fetch("/prediksi/run", {
           method: "POST",
@@ -461,43 +385,7 @@
               return;
             }
 
-            // Update Model Performance Metrics
-            if (data.error_metrics) {
-              const metrics = data.error_metrics;
-              document.getElementById("errorMetrics").innerHTML = `
-                <div class="bg-red-50 p-3 rounded">
-                  <p class="text-sm"><strong>RMSE:</strong> ${
-                    metrics.rmse !== null ? metrics.rmse.toFixed(2) : "N/A"
-                  }</p>
-                  <p class="text-xs text-gray-600">Root Mean Squared Error</p>
-                </div>
-                <div class="bg-orange-50 p-3 rounded">
-                  <p class="text-sm"><strong>MAE:</strong> ${
-                    metrics.mae !== null ? metrics.mae.toFixed(2) : "N/A"
-                  }</p>
-                  <p class="text-xs text-gray-600">Mean Absolute Error</p>
-                </div>
-                <div class="bg-yellow-50 p-3 rounded">
-                  <p class="text-sm"><strong>MAPE:</strong> ${
-                    metrics.mape !== null
-                      ? metrics.mape.toFixed(2) + "%"
-                      : "N/A"
-                  }</p>
-                  <p class="text-xs text-gray-600">Mean Absolute Percentage Error</p>
-                </div>
-                <div class="bg-green-50 p-3 rounded">
-                  <p class="text-sm"><strong>R²:</strong> ${
-                    metrics.r2 !== null ? metrics.r2.toFixed(4) : "N/A"
-                  }</p>
-                  <p class="text-xs text-gray-600">Coefficient of Determination</p>
-                </div>
-              `;
-            } else {
-              document.getElementById("errorMetrics").innerHTML = `
-                <p class="text-gray-500 text-sm">Error metrics tidak tersedia (data testing tidak cukup)</p>
-              `;
-            }
-
+            // Update Model Performance Metrics (only Goodness of Fit)
             if (data.goodness_of_fit) {
               const gof = data.goodness_of_fit;
               document.getElementById("goodnessOfFit").innerHTML = `

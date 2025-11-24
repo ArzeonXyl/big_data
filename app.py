@@ -114,12 +114,7 @@ def home():
 
 @app.route("/prediksi")
 def prediksi():
-    # Get cluster info untuk option di form
-    cluster_info = {
-        'cluster_spend': sorted(data_segmentasi['cluster_spend'].unique().tolist()),
-        'cluster_geo': sorted(data_segmentasi['cluster_geo_dim2'].unique().tolist())
-    }
-    return render_template("prediksi.html", cluster_info=cluster_info)
+    return render_template("prediksi.html")
 
 @app.route("/prediksi/run", methods=['POST'])
 def run_prediksi():
@@ -131,8 +126,6 @@ def run_prediksi():
         data = request.json
         steps = int(data.get('steps', 7))  # Default 7 hari ke depan
         user_data = data.get('user_data', None)  # Data transaksi dari user
-        cluster_spend = data.get('cluster_spend', None)  # Filter by cluster
-        cluster_geo = data.get('cluster_geo', None)  # Filter by geo cluster
         
         # Jika user input data sendiri, gunakan itu sebagai basis
         if user_data and len(user_data) > 0:
@@ -192,59 +185,22 @@ def run_prediksi():
                 'goodness_of_fit': goodness_of_fit
             })
         else:
-            # Gunakan data default dari dataset dengan filter cluster jika ada
+            # Gunakan data default dari dataset
             import numpy as np
-            
-            df_filtered = data_segmentasi.copy()
-            filter_info = []
-            
-            # Apply cluster filters untuk analisis lebih spesifik
-            if cluster_spend is not None:
-                df_filtered = df_filtered[df_filtered['cluster_spend'] == int(cluster_spend)]
-                filter_info.append(f"Cluster Spend {cluster_spend}")
-            
-            if cluster_geo is not None:
-                df_filtered = df_filtered[df_filtered['cluster_geo_dim2'] == int(cluster_geo)]
-                filter_info.append(f"Cluster Geo {cluster_geo}")
-            
-            # Hitung daily transactions dari filtered data
-            if len(df_filtered) > 0:
-                daily_trans_filtered = df_filtered.groupby(df_filtered['trans_datetime'].dt.date).size()
-                
-                # Calculate adjustment factor berdasarkan cluster pattern
-                if len(filter_info) > 0:
-                    cluster_avg = daily_trans_filtered.mean()
-                    overall_avg = daily_transactions.mean() if daily_transactions is not None else cluster_avg
-                    adjustment_factor = cluster_avg / overall_avg if overall_avg > 0 else 1
-                else:
-                    adjustment_factor = 1
-                    daily_trans_filtered = daily_transactions
-            else:
-                daily_trans_filtered = daily_transactions
-                adjustment_factor = 1
             
             # Lakukan prediksi
             forecast = model_sarimax.forecast(steps=steps)
-            
-            # Apply adjustment jika ada filter
-            if adjustment_factor != 1:
-                forecast = forecast * adjustment_factor
             
             # Buat tanggal untuk hasil prediksi
             last_date = data_segmentasi['trans_datetime'].max()
             future_dates = [last_date + timedelta(days=i+1) for i in range(steps)]
             
             # Calculate error metrics on test set (last 30% of data)
-            if daily_trans_filtered is not None and len(daily_trans_filtered) > 10:
-                split_idx = int(len(daily_trans_filtered) * 0.7)
-                test_actual = daily_trans_filtered.values[split_idx:]
-                test_steps = min(len(test_actual), 30)  # Limit test steps
-                
-                # Get forecast for test period
+            if daily_transactions is not None and len(daily_transactions) > 10:
+                split_idx = int(len(daily_transactions) * 0.7)
+                test_actual = daily_transactions.values[split_idx:]
+                test_steps = min(len(test_actual), 30)
                 test_forecast = model_sarimax.forecast(steps=test_steps)
-                if adjustment_factor != 1:
-                    test_forecast = test_forecast * adjustment_factor
-                
                 error_metrics = calculate_error_metrics(test_actual[:test_steps], test_forecast[:test_steps])
             else:
                 error_metrics = None
@@ -264,27 +220,14 @@ def run_prediksi():
                 'hqic': float(model_sarimax.hqic) if hasattr(model_sarimax, 'hqic') else None,
             }
             
-            # Build model type description
-            if len(filter_info) > 0:
-                model_type = f"SARIMAX ({', '.join(filter_info)})"
-                adjustment_info = f"Adjusted by factor {adjustment_factor:.2f} based on cluster pattern"
-            else:
-                model_type = "SARIMAX"
-                adjustment_info = None
-            
-            response = {
+            return jsonify({
                 'success': True,
                 'predictions': results,
-                'model_type': model_type,
+                'model_type': 'SARIMAX',
                 'last_actual_date': last_date.strftime('%Y-%m-%d'),
                 'error_metrics': error_metrics,
                 'goodness_of_fit': goodness_of_fit
-            }
-            
-            if adjustment_info:
-                response['adjustment_info'] = adjustment_info
-            
-            return jsonify(response)
+            })
     
     except Exception as e:
         import traceback
