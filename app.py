@@ -10,6 +10,19 @@ app = Flask(__name__)
 data_segmentasi = pd.read_pickle("data/data_segmentasi.pkl")
 data_segmentasi['month'] = data_segmentasi['trans_datetime'].dt.month
 
+# Load data harian untuk tampilan historis
+try:
+    data_harian = pd.read_csv("data/data_harian.csv")
+    # Pastikan kolom tanggal dalam format datetime
+    if 'date' in data_harian.columns:
+        data_harian['date'] = pd.to_datetime(data_harian['date'])
+    elif 'tanggal' in data_harian.columns:
+        data_harian['date'] = pd.to_datetime(data_harian['tanggal'])
+    print(f"Data harian loaded: {len(data_harian)} records")
+except Exception as e:
+    data_harian = None
+    print(f"Warning: Could not load data_harian.csv: {e}")
+
 # Load model SARIMAX
 try:
     import os
@@ -205,13 +218,31 @@ def run_prediksi():
             else:
                 error_metrics = None
             
-            # Format hasil
+            # Format hasil prediksi
             results = []
             for date, value in zip(future_dates, forecast):
                 results.append({
                     'date': date.strftime('%Y-%m-%d'),
                     'predicted_transactions': float(value)
                 })
+            
+            # Get historical data dari data_harian.csv
+            historical = []
+            if data_harian is not None:
+                # Filter data dari 01-01-2019 sampai 21-06-2020
+                start_date = pd.to_datetime('2019-01-01')
+                end_date = pd.to_datetime('2020-06-21')
+                
+                df_filtered = data_harian[(data_harian['date'] >= start_date) & 
+                                          (data_harian['date'] <= end_date)].copy()
+                df_filtered = df_filtered.sort_values('date')
+                
+                for _, row in df_filtered.iterrows():
+                    historical.append({
+                        'date': row['date'].strftime('%Y-%m-%d'),
+                        'transactions': int(row.get('transactions', row.get('jumlah_transaksi', 0)))
+                    })
+                
             
             # Get model goodness of fit
             goodness_of_fit = {
@@ -223,6 +254,7 @@ def run_prediksi():
             return jsonify({
                 'success': True,
                 'predictions': results,
+                'historical': historical,
                 'model_type': 'SARIMAX',
                 'last_actual_date': last_date.strftime('%Y-%m-%d'),
                 'error_metrics': error_metrics,
