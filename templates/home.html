@@ -6,14 +6,183 @@
 <title>Home - BigData Dashboard</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&display=swap');
+  
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: #0a0a0a;
+    color: #fff;
+  }
+  
+  .brutal-card {
+    border: 4px solid #000;
+    box-shadow: 8px 8px 0 #000;
+    transition: all 0.2s ease;
+  }
+  
+  .brutal-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 12px 12px 0 #000;
+  }
+  
+  .brutal-btn {
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0 #000;
+    transition: all 0.2s ease;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  
+  .brutal-btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 #000;
+  }
+  
+  .glitch {
+    position: relative;
+    animation: glitch 2s infinite;
+  }
+  
+  @keyframes glitch {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+  }
+  
+  .grid-bg {
+    background-image: 
+      linear-gradient(#1a1a1a 1px, transparent 1px),
+      linear-gradient(90deg, #1a1a1a 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+</style>
 </head>
-<body class="bg-gray-100">
+<body class="grid-bg">
 
 {% include 'navbar.html' %}
 
-<div class="max-w-7xl mx-auto p-6">
-  <h1 class="text-3xl font-bold mb-4">Welcome to BigData Dashboard</h1>
-  <p class="text-gray-700">Ini halaman utama. Bisa ditambahkan ringkasan, statistik, atau shortcut ke halaman Segmentasi dan Prediksi.</p>
+<div class="min-h-screen py-12 px-4">
+  <!-- Hero Section -->
+  <div class="max-w-6xl mx-auto mb-16">
+    <div class="text-center mb-12">
+      <h1 class="text-7xl md:text-9xl font-black mb-6 glitch">
+        <span class="bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 text-transparent bg-clip-text">
+          BIG DATA
+        </span>
+      </h1>
+      <p class="text-2xl md:text-3xl font-bold text-gray-300 uppercase tracking-wider">
+        Time Series Prediction & Clustering
+      </p>
+    </div>
+  </div>
+
+  <!-- Feature Cards -->
+  <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 mb-12">
+    <!-- Prediksi Card -->
+    <a href="/prediksi" class="block">
+      <div class="brutal-card bg-gradient-to-br from-yellow-400 to-orange-500 p-8 h-full">
+        <div class="flex items-start justify-between mb-6">
+          <div class="bg-black text-yellow-400 p-4 brutal-card">
+            <i class="fas fa-chart-line text-4xl"></i>
+          </div>
+          <div class="bg-black text-white px-4 py-2 font-bold text-sm brutal-card">
+            SARIMAX
+          </div>
+        </div>
+        <h2 class="text-4xl font-black text-black mb-4 uppercase">
+          Prediksi
+        </h2>
+        <p class="text-black font-bold text-lg mb-6">
+          Model prediksi time series transaksi dengan SARIMAX. Forecast 3, 7, 30, hingga 50 hari ke depan.
+        </p>
+        <div class="bg-black text-yellow-400 px-6 py-3 inline-block font-bold uppercase brutal-btn">
+          Launch Model →
+        </div>
+      </div>
+    </a>
+
+    <!-- Segmentasi Card -->
+    <a href="/segmentasi" class="block">
+      <div class="brutal-card bg-gradient-to-br from-cyan-400 to-blue-500 p-8 h-full">
+        <div class="flex items-start justify-between mb-6">
+          <div class="bg-black text-cyan-400 p-4 brutal-card">
+            <i class="fas fa-layer-group text-4xl"></i>
+          </div>
+          <div class="bg-black text-white px-4 py-2 font-bold text-sm brutal-card">
+            K-MEANS
+          </div>
+        </div>
+        <h2 class="text-4xl font-black text-black mb-4 uppercase">
+          Segmentasi
+        </h2>
+        <p class="text-black font-bold text-lg mb-6">
+          Clustering pelanggan berdasarkan pola spending dan lokasi geografis menggunakan algoritma machine learning.
+        </p>
+        <div class="bg-black text-cyan-400 px-6 py-3 inline-block font-bold uppercase brutal-btn">
+          Explore Data →
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <!-- Map Card -->
+  <div class="max-w-6xl mx-auto">
+    <a href="/map" class="block">
+      <div class="brutal-card bg-gradient-to-br from-pink-400 to-purple-500 p-8">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div class="flex items-center gap-6">
+            <div class="bg-black text-pink-400 p-6 brutal-card">
+              <i class="fas fa-map-marked-alt text-5xl"></i>
+            </div>
+            <div>
+              <h2 class="text-4xl font-black text-black mb-2 uppercase">
+                Geographic Map
+              </h2>
+              <p class="text-black font-bold text-lg">
+                Visualisasi interaktif data transaksi berdasarkan zona geografis
+              </p>
+            </div>
+          </div>
+          <div class="bg-black text-pink-400 px-8 py-4 font-bold uppercase text-xl brutal-btn">
+            View Map →
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <!-- Stats Section -->
+  <div class="max-w-6xl mx-auto mt-12 grid grid-cols-2 md:grid-cols-4 gap-6">
+    <div class="brutal-card bg-black border-yellow-400 p-6 text-center">
+      <div class="text-yellow-400 text-4xl font-black mb-2">2019-2020</div>
+      <div class="text-gray-400 font-bold uppercase text-sm">Data Period</div>
+    </div>
+    <div class="brutal-card bg-black border-cyan-400 p-6 text-center">
+      <div class="text-cyan-400 text-4xl font-black mb-2">SARIMAX</div>
+      <div class="text-gray-400 font-bold uppercase text-sm">Time Series</div>
+    </div>
+    <div class="brutal-card bg-black border-pink-400 p-6 text-center">
+      <div class="text-pink-400 text-4xl font-black mb-2">K-MEANS</div>
+      <div class="text-gray-400 font-bold uppercase text-sm">Clustering</div>
+    </div>
+    <div class="brutal-card bg-black border-orange-400 p-6 text-center">
+      <div class="text-orange-400 text-4xl font-black mb-2">FOLIUM</div>
+      <div class="text-gray-400 font-bold uppercase text-sm">Mapping</div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="max-w-6xl mx-auto mt-16 text-center">
+    <div class="bg-black brutal-card p-6 inline-block">
+      <p class="text-gray-400 font-bold uppercase text-sm">
+        <i class="fas fa-database mr-2"></i>
+        By Kelompok 6
+      </p>
+    </div>
+  </div>
 </div>
 
 </body>
