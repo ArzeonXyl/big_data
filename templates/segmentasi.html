@@ -49,24 +49,24 @@
     <!-- Navbar include -->
     {% include 'navbar.html' %}
 
-    <div class="max-w-7xl mx-auto p-6">
-      <div class="mb-8">
-        <h1 class="text-5xl md:text-6xl font-black mb-4 uppercase">
+    <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+      <div class="mb-6 sm:mb-8">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-3 sm:mb-4 uppercase">
           <span class="bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text">
             Analisis Segmentasi
           </span>
         </h1>
-        <p class="text-gray-400 text-lg font-bold">
+        <p class="text-gray-400 text-sm sm:text-base md:text-lg font-bold">
           Visualisasi dan analisis data segmentasi pelanggan berdasarkan <span class="text-cyan-400">spending</span> dan <span class="text-blue-400">geografis</span>
         </p>
       </div>
 
       <!-- Filter Controls -->
-      <div class="brutal-card bg-gradient-to-br from-cyan-400 to-blue-500 p-6 mb-6">
-        <h2 class="text-2xl font-black mb-6 uppercase text-black">
+      <div class="brutal-card bg-gradient-to-br from-cyan-400 to-blue-500 p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">
+        <h2 class="text-xl sm:text-2xl font-black mb-4 sm:mb-6 uppercase text-black">
           <i class="fas fa-filter mr-2"></i>Filter Data
         </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
           <div>
             <label class="block text-black font-bold mb-3 uppercase text-sm"
               >Cluster Spend</label
@@ -111,9 +111,9 @@
       <!-- Loading Indicator -->
       <div
         id="loading"
-        class="hidden bg-blue-50 border-l-4 border-blue-500 p-4 mb-6"
+        class="hidden brutal-card bg-cyan-400 p-3 sm:p-4 mb-4 sm:mb-6"
       >
-        <p class="text-blue-700">
+        <p class="text-black font-bold uppercase text-sm sm:text-base">
           <i class="fas fa-spinner fa-spin mr-2"></i>Memuat data...
         </p>
       </div>
@@ -121,62 +121,62 @@
       <!-- Error Message -->
       <div
         id="error"
-        class="hidden bg-red-50 border-l-4 border-red-500 p-4 mb-6"
+        class="hidden brutal-card bg-red-500 p-3 sm:p-4 mb-4 sm:mb-6"
       >
-        <p class="text-red-700">
+        <p class="text-black font-bold uppercase text-sm sm:text-base">
           <i class="fas fa-exclamation-circle mr-2"></i
           ><span id="errorMsg"></span>
         </p>
       </div>
 
       <!-- Summary Statistics -->
-      <div id="summarySection" class="hidden mb-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div class="bg-white shadow-md rounded-lg p-6">
+      <div id="summarySection" class="hidden mb-4 sm:mb-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div class="brutal-card bg-black border-cyan-400 p-3 sm:p-4">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-gray-600 text-sm">Total Records</p>
-                <p class="text-2xl font-bold text-blue-600" id="totalRecords">
+                <p class="text-gray-400 text-xs font-bold uppercase mb-1">Total Records</p>
+                <p class="text-xl sm:text-2xl font-black text-cyan-400" id="totalRecords">
                   0
                 </p>
               </div>
-              <i class="fas fa-database text-4xl text-blue-200"></i>
+              <i class="fas fa-database text-2xl sm:text-3xl md:text-4xl text-cyan-400 opacity-50"></i>
             </div>
           </div>
-          <div class="bg-white shadow-md rounded-lg p-6">
+          <div class="brutal-card bg-black border-green-400 p-3 sm:p-4">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-gray-600 text-sm">Avg Distance</p>
-                <p class="text-2xl font-bold text-green-600" id="avgDistance">
+                <p class="text-gray-400 text-xs font-bold uppercase mb-1">Avg Distance</p>
+                <p class="text-xl sm:text-2xl font-black text-green-400" id="avgDistance">
                   0
                 </p>
               </div>
-              <i class="fas fa-route text-4xl text-green-200"></i>
+              <i class="fas fa-route text-2xl sm:text-3xl md:text-4xl text-green-400 opacity-50"></i>
             </div>
           </div>
-          <div class="bg-white shadow-md rounded-lg p-6">
+          <div class="brutal-card bg-black border-purple-400 p-3 sm:p-4">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-gray-600 text-sm">Spend Clusters</p>
+                <p class="text-gray-400 text-xs font-bold uppercase mb-1">Spend Clusters</p>
                 <p
-                  class="text-2xl font-bold text-purple-600"
+                  class="text-xl sm:text-2xl font-black text-purple-400"
                   id="spendClusters"
                 >
                   0
                 </p>
               </div>
-              <i class="fas fa-coins text-4xl text-purple-200"></i>
+              <i class="fas fa-coins text-2xl sm:text-3xl md:text-4xl text-purple-400 opacity-50"></i>
             </div>
           </div>
-          <div class="bg-white shadow-md rounded-lg p-6">
+          <div class="brutal-card bg-black border-orange-400 p-3 sm:p-4">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-gray-600 text-sm">Geo Clusters</p>
-                <p class="text-2xl font-bold text-orange-600" id="geoClusters">
+                <p class="text-gray-400 text-xs font-bold uppercase mb-1">Geo Clusters</p>
+                <p class="text-xl sm:text-2xl font-black text-orange-400" id="geoClusters">
                   0
                 </p>
               </div>
-              <i class="fas fa-map-marked-alt text-4xl text-orange-200"></i>
+              <i class="fas fa-map-marked-alt text-2xl sm:text-3xl md:text-4xl text-orange-400 opacity-50"></i>
             </div>
           </div>
         </div>
@@ -184,95 +184,103 @@
 
       <!-- Charts Section -->
       <div id="chartsSection" class="hidden">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
           <!-- Cluster Spend Distribution -->
-          <div class="bg-white shadow-md rounded-lg p-6">
-            <h3 class="text-lg font-semibold mb-4">
+          <div class="brutal-card bg-gradient-to-br from-cyan-400 to-blue-500 p-4 sm:p-5 md:p-6">
+            <h3 class="text-base sm:text-lg font-black mb-3 sm:mb-4 uppercase text-black">
               <i class="fas fa-chart-pie mr-2"></i>Distribusi Cluster Spend
             </h3>
-            <canvas id="clusterSpendChart"></canvas>
+            <div class="bg-white p-2 sm:p-3 brutal-card">
+              <canvas id="clusterSpendChart"></canvas>
+            </div>
           </div>
 
           <!-- Cluster Geo Distribution -->
-          <div class="bg-white shadow-md rounded-lg p-6">
-            <h3 class="text-lg font-semibold mb-4">
+          <div class="brutal-card bg-gradient-to-br from-blue-400 to-purple-500 p-4 sm:p-5 md:p-6">
+            <h3 class="text-base sm:text-lg font-black mb-3 sm:mb-4 uppercase text-black">
               <i class="fas fa-chart-pie mr-2"></i>Distribusi Cluster Geo
             </h3>
-            <canvas id="clusterGeoChart"></canvas>
+            <div class="bg-white p-2 sm:p-3 brutal-card">
+              <canvas id="clusterGeoChart"></canvas>
+            </div>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
           <!-- Label Spend Distribution -->
-          <div class="bg-white shadow-md rounded-lg p-6">
-            <h3 class="text-lg font-semibold mb-4">
+          <div class="brutal-card bg-gradient-to-br from-yellow-400 to-orange-500 p-4 sm:p-5 md:p-6">
+            <h3 class="text-base sm:text-lg font-black mb-3 sm:mb-4 uppercase text-black">
               <i class="fas fa-chart-bar mr-2"></i>Distribusi Label Spend
             </h3>
-            <canvas id="labelSpendChart"></canvas>
+            <div class="bg-white p-2 sm:p-3 brutal-card">
+              <canvas id="labelSpendChart"></canvas>
+            </div>
           </div>
 
           <!-- Label Geo Distribution -->
-          <div class="bg-white shadow-md rounded-lg p-6">
-            <h3 class="text-lg font-semibold mb-4">
+          <div class="brutal-card bg-gradient-to-br from-pink-400 to-purple-500 p-4 sm:p-5 md:p-6">
+            <h3 class="text-base sm:text-lg font-black mb-3 sm:mb-4 uppercase text-black">
               <i class="fas fa-chart-bar mr-2"></i>Distribusi Label Geo
             </h3>
-            <canvas id="labelGeoChart"></canvas>
+            <div class="bg-white p-2 sm:p-3 brutal-card">
+              <canvas id="labelGeoChart"></canvas>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Data Table -->
-      <div id="tableSection" class="hidden bg-white shadow-md rounded-lg p-6">
-        <h2 class="text-xl font-semibold mb-4">
+      <div id="tableSection" class="hidden brutal-card bg-gradient-to-br from-green-400 to-cyan-500 p-4 sm:p-5 md:p-6">
+        <h2 class="text-lg sm:text-xl font-black mb-3 sm:mb-4 uppercase text-black">
           <i class="fas fa-table mr-2"></i>Sample Data (100 records pertama)
         </h2>
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+        <div class="overflow-x-auto bg-white brutal-card p-2 sm:p-3 -mx-2 sm:mx-0">
+          <table class="min-w-full divide-y-4 divide-black">
+            <thead class="bg-black">
               <tr>
                 <th
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                  class="px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-left text-xs font-black text-green-400 uppercase whitespace-nowrap"
                 >
                   No
                 </th>
                 <th
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                  class="px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-left text-xs font-black text-green-400 uppercase whitespace-nowrap"
                 >
                   CC Num
                 </th>
                 <th
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                  class="px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-left text-xs font-black text-green-400 uppercase whitespace-nowrap"
                 >
                   Trans DateTime
                 </th>
                 <th
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                  class="px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-left text-xs font-black text-green-400 uppercase whitespace-nowrap"
                 >
                   Cluster Spend
                 </th>
                 <th
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                  class="px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-left text-xs font-black text-green-400 uppercase whitespace-nowrap"
                 >
                   Label Spend
                 </th>
                 <th
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                  class="px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-left text-xs font-black text-green-400 uppercase whitespace-nowrap"
                 >
                   Cluster Geo
                 </th>
                 <th
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                  class="px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-left text-xs font-black text-green-400 uppercase whitespace-nowrap"
                 >
                   Label Geo
                 </th>
                 <th
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                  class="px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-left text-xs font-black text-green-400 uppercase whitespace-nowrap"
                 >
                   Distance (km)
                 </th>
               </tr>
             </thead>
-            <tbody id="tableBody" class="bg-white divide-y divide-gray-200">
+            <tbody id="tableBody" class="bg-white divide-y-2 divide-gray-300">
               <!-- Will be populated by JS -->
             </tbody>
           </table>
@@ -461,24 +469,24 @@
 
         data.forEach((row, index) => {
           const tr = document.createElement("tr");
-          tr.className = index % 2 === 0 ? "bg-white" : "bg-gray-50";
+          tr.className = index % 2 === 0 ? "bg-white" : "bg-gray-100";
           tr.innerHTML = `
-            <td class="px-4 py-3 text-sm">${index + 1}</td>
-            <td class="px-4 py-3 text-sm">${row.cc_num || "-"}</td>
-            <td class="px-4 py-3 text-sm">${row.trans_datetime || "-"}</td>
-            <td class="px-4 py-3 text-sm text-center">
-              <span class="px-2 py-1 rounded bg-blue-100 text-blue-800">${
+            <td class="px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-xs sm:text-sm font-bold text-black whitespace-nowrap">${index + 1}</td>
+            <td class="px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-black whitespace-nowrap">${row.cc_num || "-"}</td>
+            <td class="px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-black whitespace-nowrap">${row.trans_datetime || "-"}</td>
+            <td class="px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-xs sm:text-sm text-center">
+              <span class="px-2 py-1 brutal-btn bg-cyan-400 text-black text-xs font-bold">${
                 row.cluster_spend
               }</span>
             </td>
-            <td class="px-4 py-3 text-sm">${row.label || "-"}</td>
-            <td class="px-4 py-3 text-sm text-center">
-              <span class="px-2 py-1 rounded bg-purple-100 text-purple-800">${
+            <td class="px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-black whitespace-nowrap">${row.label || "-"}</td>
+            <td class="px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-xs sm:text-sm text-center">
+              <span class="px-2 py-1 brutal-btn bg-blue-400 text-black text-xs font-bold">${
                 row.cluster_geo_dim2
               }</span>
             </td>
-            <td class="px-4 py-3 text-sm">${row.label_geo_dim2 || "-"}</td>
-            <td class="px-4 py-3 text-sm">${
+            <td class="px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-black whitespace-nowrap">${row.label_geo_dim2 || "-"}</td>
+            <td class="px-2 sm:px-3 md:px-4 py-2 sm:py-3 text-xs sm:text-sm font-bold text-green-600 whitespace-nowrap">${
               row.distance_km ? row.distance_km.toFixed(2) : "-"
             }</td>
           `;
