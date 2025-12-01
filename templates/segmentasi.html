@@ -10,58 +10,97 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&display=swap');
+      
+      body {
+        font-family: 'Space Grotesk', sans-serif;
+        background: #0a0a0a;
+        color: #fff;
+      }
+      
+      .brutal-card {
+        border: 4px solid #000;
+        box-shadow: 8px 8px 0 #000;
+      }
+      
+      .brutal-btn {
+        border: 3px solid #000;
+        box-shadow: 4px 4px 0 #000;
+        transition: all 0.2s ease;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      
+      .brutal-btn:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 #000;
+      }
+      
+      .grid-bg {
+        background-image: 
+          linear-gradient(#1a1a1a 1px, transparent 1px),
+          linear-gradient(90deg, #1a1a1a 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+    </style>
   </head>
-  <body class="bg-gray-100">
+  <body class="grid-bg">
     <!-- Navbar include -->
     {% include 'navbar.html' %}
 
     <div class="max-w-7xl mx-auto p-6">
-      <h1 class="text-3xl font-bold mb-4">Analisis Segmentasi</h1>
-      <p class="text-gray-700 mb-4">
-        Visualisasi dan analisis data segmentasi pelanggan berdasarkan spending
-        dan geografis
-      </p>
+      <div class="mb-8">
+        <h1 class="text-5xl md:text-6xl font-black mb-4 uppercase">
+          <span class="bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text">
+            Analisis Segmentasi
+          </span>
+        </h1>
+        <p class="text-gray-400 text-lg font-bold">
+          Visualisasi dan analisis data segmentasi pelanggan berdasarkan <span class="text-cyan-400">spending</span> dan <span class="text-blue-400">geografis</span>
+        </p>
+      </div>
 
       <!-- Filter Controls -->
-      <div class="bg-white shadow-md rounded-lg p-6 mb-6">
-        <h2 class="text-xl font-semibold mb-4">
+      <div class="brutal-card bg-gradient-to-br from-cyan-400 to-blue-500 p-6 mb-6">
+        <h2 class="text-2xl font-black mb-6 uppercase text-black">
           <i class="fas fa-filter mr-2"></i>Filter Data
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label class="block text-gray-700 font-medium mb-2"
+            <label class="block text-black font-bold mb-3 uppercase text-sm"
               >Cluster Spend</label
             >
             <select
               id="clusterSpend"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              class="w-full px-4 py-3 brutal-btn bg-black text-cyan-400 cursor-pointer"
             >
               <option value="">Semua</option>
-              <option value="0">Cluster 0</option>
-              <option value="1">Cluster 1</option>
-              <option value="2">Cluster 2</option>
-              <option value="3">Cluster 3</option>
+              <option value="0">Hemat dan Moderat</option>
+              <option value="1">Boros dan Moderat</option>
+              <option value="2">Hemat dan Aktif</option>
+              <option value="3">Boros dan Pasif</option>
             </select>
           </div>
           <div>
-            <label class="block text-gray-700 font-medium mb-2"
+            <label class="block text-black font-bold mb-3 uppercase text-sm"
               >Cluster Geo</label
             >
             <select
               id="clusterGeo"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              class="w-full px-4 py-3 brutal-btn bg-black text-blue-400 cursor-pointer"
             >
               <option value="">Semua</option>
-              <option value="0">Cluster 0</option>
-              <option value="1">Cluster 1</option>
-              <option value="2">Cluster 2</option>
-              <option value="3">Cluster 3</option>
+              <option value="0">Dekat</option>
+              <option value="1">Jauh</option>
+              <option value="2">Sangat Dekat</option>
+              <option value="3">Sangat Jauh</option>
             </select>
           </div>
           <div class="flex items-end">
             <button
               onclick="loadSegmentationData()"
-              class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg transition duration-200"
+              class="w-full brutal-btn bg-black text-cyan-400 hover:text-white px-6 py-3 cursor-pointer"
             >
               <i class="fas fa-search mr-2"></i>Tampilkan Data
             </button>

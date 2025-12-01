@@ -10,12 +10,50 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<<<<<<< HEAD
+=======
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&display=swap');
+      
+      body {
+        font-family: 'Space Grotesk', sans-serif;
+        background: #0a0a0a;
+        color: #fff;
+      }
+      
+      .brutal-card {
+        border: 4px solid #000;
+        box-shadow: 8px 8px 0 #000;
+      }
+      
+      .brutal-btn {
+        border: 3px solid #000;
+        box-shadow: 4px 4px 0 #000;
+        transition: all 0.2s ease;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      
+      .brutal-btn:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 #000;
+      }
+      
+      .grid-bg {
+        background-image: 
+          linear-gradient(#1a1a1a 1px, transparent 1px),
+          linear-gradient(90deg, #1a1a1a 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+    </style>
+>>>>>>> 0020d13442d5d8025e945697377bd92179baeb5c
   </head>
-  <body class="bg-gray-100">
+  <body class="grid-bg">
     <!-- Navbar include -->
     {% include 'navbar.html' %}
 
     <div class="max-w-7xl mx-auto p-6">
+<<<<<<< HEAD
       <h1 class="text-3xl font-bold mb-4">Prediksi Transaksi SARIMAX</h1>
       <p class="text-gray-700 mb-6">
         Data historis: <strong>01 Januari 2019 - 21 Juni 2020</strong> dengan prediksi ke depan
@@ -29,12 +67,37 @@
 
         <div class="mb-4">
           <label class="block text-gray-700 font-medium mb-2" for="predictionDays">
+=======
+      <div class="mb-8">
+        <h1 class="text-5xl md:text-6xl font-black mb-4 uppercase">
+          <span class="bg-gradient-to-r from-yellow-400 to-orange-500 text-transparent bg-clip-text">
+            Prediksi Transaksi
+          </span>
+        </h1>
+        <p class="text-gray-400 text-lg font-bold">
+          Data historis: <span class="text-yellow-400">01 Januari 2019 - 21 Juni 2020</span> dengan prediksi ke depan
+        </p>
+      </div>
+
+      <!-- Form Dropdown Prediksi -->
+      <div class="brutal-card bg-gradient-to-br from-yellow-400 to-orange-500 p-6 mb-6">
+        <h2 class="text-2xl font-black mb-6 uppercase text-black">
+          <i class="fas fa-chart-line mr-2"></i>Pilih Periode Prediksi
+        </h2>
+
+        <div class="mb-6">
+          <label class="block text-black font-bold mb-3 uppercase text-sm" for="predictionDays">
+>>>>>>> 0020d13442d5d8025e945697377bd92179baeb5c
             Prediksi untuk berapa hari ke depan?
           </label>
           <select
             id="predictionDays"
             onchange="updatePrediction()"
+<<<<<<< HEAD
             class="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+=======
+            class="w-full md:w-64 px-4 py-3 brutal-btn bg-black text-yellow-400 cursor-pointer text-lg"
+>>>>>>> 0020d13442d5d8025e945697377bd92179baeb5c
           >
             <option value="3">3 Hari</option>
             <option value="7" selected>7 Hari</option>
@@ -43,8 +106,13 @@
           </select>
         </div>
 
+<<<<<<< HEAD
         <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
           <p class="text-sm text-blue-700">
+=======
+        <div class="bg-black text-yellow-400 brutal-card p-4">
+          <p class="text-sm font-bold">
+>>>>>>> 0020d13442d5d8025e945697377bd92179baeb5c
             <i class="fas fa-info-circle mr-2"></i>
             Grafik akan menampilkan data historis dari 01 Januari 2019 sampai 21 Juni 2020, 
             ditambah prediksi sesuai pilihan Anda (3, 7, 30, atau 50 hari ke depan).
@@ -55,9 +123,9 @@
       <!-- Loading Indicator -->
       <div
         id="loading"
-        class="hidden bg-blue-50 border-l-4 border-blue-500 p-4 mb-6"
+        class="hidden brutal-card bg-cyan-400 p-4 mb-6"
       >
-        <p class="text-blue-700">
+        <p class="text-black font-bold uppercase">
           <i class="fas fa-spinner fa-spin mr-2"></i>Sedang memproses
           prediksi...
         </p>
@@ -66,9 +134,9 @@
       <!-- Error Message -->
       <div
         id="error"
-        class="hidden bg-red-50 border-l-4 border-red-500 p-4 mb-6"
+        class="hidden brutal-card bg-red-500 p-4 mb-6"
       >
-        <p class="text-red-700">
+        <p class="text-black font-bold uppercase">
           <i class="fas fa-exclamation-circle mr-2"></i
           ><span id="errorMsg"></span>
         </p>
@@ -77,6 +145,7 @@
       <!-- Hasil Visualisasi -->
       <div id="results" class="hidden">
         <!-- Info Summary -->
+<<<<<<< HEAD
         <div class="bg-white shadow-md rounded-lg p-6 mb-6">
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div class="bg-blue-50 p-4 rounded-lg">
@@ -123,11 +192,60 @@
         <div class="bg-white shadow-md rounded-lg p-6">
           <h2 class="text-xl font-semibold mb-4">
             <i class="fas fa-table mr-2"></i>Detail Hasil Prediksi
+=======
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div class="brutal-card bg-black border-yellow-400 p-4">
+            <p class="text-gray-400 text-xs font-bold uppercase mb-2">Model</p>
+            <p class="text-2xl font-black text-yellow-400">SARIMAX</p>
+          </div>
+          <div class="brutal-card bg-black border-green-400 p-4">
+            <p class="text-gray-400 text-xs font-bold uppercase mb-2">Data Historis</p>
+            <p class="text-sm font-bold text-green-400">01/01/2019 - 21/06/2020</p>
+          </div>
+          <div class="brutal-card bg-black border-purple-400 p-4">
+            <p class="text-gray-400 text-xs font-bold uppercase mb-2">Periode Prediksi</p>
+            <p class="text-2xl font-black text-purple-400" id="predPeriod">-</p>
+          </div>
+          <div class="brutal-card bg-black border-orange-400 p-4">
+            <p class="text-gray-400 text-xs font-bold uppercase mb-2">Akhir Prediksi</p>
+            <p class="text-sm font-bold text-orange-400" id="endPredDate">-</p>
+          </div>
+        </div>
+
+        <!-- Grafik -->
+        <div class="brutal-card bg-gradient-to-br from-cyan-400 to-blue-500 p-6 mb-6">
+          <h2 class="text-2xl font-black mb-6 uppercase text-black">
+            <i class="fas fa-chart-bar mr-2"></i>Grafik Data Historis & Prediksi
           </h2>
-          <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
+          <div class="bg-white p-4 brutal-card">
+            <canvas id="predictionChart" class="w-full" height="80"></canvas>
+          </div>
+        </div>
+
+        <!-- Model Performance -->
+        <div class="brutal-card bg-gradient-to-br from-pink-400 to-purple-500 p-6 mb-6">
+          <h2 class="text-2xl font-black mb-6 uppercase text-black">
+            <i class="fas fa-chart-pie mr-2"></i>Goodness of Fit Model
+>>>>>>> 0020d13442d5d8025e945697377bd92179baeb5c
+          </h2>
+          <div id="goodnessOfFit" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Will be populated by JS -->
+          </div>
+          <div class="mt-6 bg-black brutal-card p-4">
+            <p class="text-pink-400 font-bold text-sm"><span class="text-white">INTERPRETASI:</span> AIC, BIC, dan HQIC semakin kecil menunjukkan model semakin optimal dan efisien.</p>
+          </div>
+        </div>
+
+        <!-- Tabel Detail Prediksi -->
+        <div class="brutal-card bg-gradient-to-br from-yellow-400 to-orange-500 p-6">
+          <h2 class="text-2xl font-black mb-6 uppercase text-black">
+            <i class="fas fa-table mr-2"></i>Detail Hasil Prediksi
+          </h2>
+          <div class="overflow-x-auto bg-white brutal-card p-4">
+            <table class="min-w-full divide-y-4 divide-black">
+              <thead class="bg-black">
                 <tr>
+<<<<<<< HEAD
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     No
                   </th>
@@ -135,11 +253,24 @@
                     Tanggal
                   </th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+=======
+                  <th class="px-6 py-3 text-left text-xs font-black text-yellow-400 uppercase tracking-wider">
+                    No
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-black text-yellow-400 uppercase tracking-wider">
+                    Tanggal
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-black text-yellow-400 uppercase tracking-wider">
+>>>>>>> 0020d13442d5d8025e945697377bd92179baeb5c
                     Prediksi Transaksi
                   </th>
                 </tr>
               </thead>
+<<<<<<< HEAD
               <tbody id="tableBody" class="bg-white divide-y divide-gray-200"></tbody>
+=======
+              <tbody id="tableBody" class="bg-white divide-y-2 divide-gray-300"></tbody>
+>>>>>>> 0020d13442d5d8025e945697377bd92179baeb5c
             </table>
           </div>
         </div>
@@ -193,6 +324,7 @@
               const gof = data.goodness_of_fit;
               document.getElementById("goodnessOfFit").innerHTML = `
                 ${gof.aic ? `
+<<<<<<< HEAD
                 <div class="bg-blue-50 p-4 rounded-lg">
                   <p class="text-sm text-gray-600">AIC</p>
                   <p class="text-2xl font-bold text-blue-600">${gof.aic.toFixed(2)}</p>
@@ -208,6 +340,23 @@
                 <div class="bg-purple-50 p-4 rounded-lg">
                   <p class="text-sm text-gray-600">HQIC</p>
                   <p class="text-2xl font-bold text-purple-600">${gof.hqic.toFixed(2)}</p>
+=======
+                <div class="brutal-card bg-black border-cyan-400 p-4">
+                  <p class="text-xs text-gray-400 font-bold uppercase mb-2">AIC</p>
+                  <p class="text-3xl font-black text-cyan-400">${gof.aic.toFixed(2)}</p>
+                  <p class="text-xs text-gray-500 mt-1">Akaike Information Criterion</p>
+                </div>` : ""}
+                ${gof.bic ? `
+                <div class="brutal-card bg-black border-blue-400 p-4">
+                  <p class="text-xs text-gray-400 font-bold uppercase mb-2">BIC</p>
+                  <p class="text-3xl font-black text-blue-400">${gof.bic.toFixed(2)}</p>
+                  <p class="text-xs text-gray-500 mt-1">Bayesian Information Criterion</p>
+                </div>` : ""}
+                ${gof.hqic ? `
+                <div class="brutal-card bg-black border-purple-400 p-4">
+                  <p class="text-xs text-gray-400 font-bold uppercase mb-2">HQIC</p>
+                  <p class="text-3xl font-black text-purple-400">${gof.hqic.toFixed(2)}</p>
+>>>>>>> 0020d13442d5d8025e945697377bd92179baeb5c
                   <p class="text-xs text-gray-500 mt-1">Hannan-Quinn Information Criterion</p>
                 </div>` : ""}
               `;
@@ -313,10 +462,17 @@
             tableBody.innerHTML = "";
             data.predictions.forEach((pred, index) => {
               const row = `
+<<<<<<< HEAD
                 <tr class="${index % 2 === 0 ? "bg-white" : "bg-gray-50"}">
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${index + 1}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${pred.date}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+=======
+                <tr class="${index % 2 === 0 ? "bg-white" : "bg-gray-100"}">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-black">${index + 1}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-black">${pred.date}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-lg font-black text-yellow-600">
+>>>>>>> 0020d13442d5d8025e945697377bd92179baeb5c
                     ${Math.round(pred.predicted_transactions).toLocaleString()}
                   </td>
                 </tr>
