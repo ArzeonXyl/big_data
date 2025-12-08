@@ -13,6 +13,12 @@ data_segmentasi['month'] = data_segmentasi['trans_datetime'].dt.month
 # Load data harian untuk tampilan historis
 try:
     data_harian = pd.read_csv("data/data_harian.csv")
+    # Rename kolom sesuai dengan nama di CSV
+    if 'trans_date_trans_time' in data_harian.columns:
+        data_harian.rename(columns={
+            'trans_date_trans_time': 'date',
+            'transaction_count': 'transactions'
+        }, inplace=True)
     # Pastikan kolom tanggal dalam format datetime
     if 'date' in data_harian.columns:
         data_harian['date'] = pd.to_datetime(data_harian['date'])

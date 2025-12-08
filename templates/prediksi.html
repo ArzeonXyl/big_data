@@ -49,32 +49,32 @@
     <!-- Navbar include -->
     {% include 'navbar.html' %}
 
-    <div class="max-w-7xl mx-auto p-6">
-      <div class="mb-8">
-        <h1 class="text-5xl md:text-6xl font-black mb-4 uppercase">
+    <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+      <div class="mb-6 sm:mb-8">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-3 sm:mb-4 uppercase">
           <span class="bg-gradient-to-r from-yellow-400 to-orange-500 text-transparent bg-clip-text">
             Prediksi Transaksi
           </span>
         </h1>
-        <p class="text-gray-400 text-lg font-bold">
+        <p class="text-gray-400 text-sm sm:text-base md:text-lg font-bold">
           Data historis: <span class="text-yellow-400">01 Januari 2019 - 21 Juni 2020</span> dengan prediksi ke depan
         </p>
       </div>
 
       <!-- Form Dropdown Prediksi -->
-      <div class="brutal-card bg-gradient-to-br from-yellow-400 to-orange-500 p-6 mb-6">
-        <h2 class="text-2xl font-black mb-6 uppercase text-black">
+      <div class="brutal-card bg-gradient-to-br from-yellow-400 to-orange-500 p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">
+        <h2 class="text-xl sm:text-2xl font-black mb-4 sm:mb-6 uppercase text-black">
           <i class="fas fa-chart-line mr-2"></i>Pilih Periode Prediksi
         </h2>
 
-        <div class="mb-6">
-          <label class="block text-black font-bold mb-3 uppercase text-sm" for="predictionDays">
+        <div class="mb-4 sm:mb-6">
+          <label class="block text-black font-bold mb-2 sm:mb-3 uppercase text-xs sm:text-sm" for="predictionDays">
             Prediksi untuk berapa hari ke depan?
           </label>
           <select
             id="predictionDays"
             onchange="updatePrediction()"
-            class="w-full md:w-64 px-4 py-3 brutal-btn bg-black text-yellow-400 cursor-pointer text-lg"
+            class="w-full sm:w-full md:w-80 lg:w-96 px-3 sm:px-4 py-2 sm:py-3 brutal-btn bg-black text-yellow-400 cursor-pointer text-base sm:text-lg"
           >
             <option value="3">3 Hari</option>
             <option value="7" selected>7 Hari</option>
@@ -83,8 +83,8 @@
           </select>
         </div>
 
-        <div class="bg-black text-yellow-400 brutal-card p-4">
-          <p class="text-sm font-bold">
+        <div class="bg-black text-yellow-400 brutal-card p-3 sm:p-4">
+          <p class="text-xs sm:text-sm font-bold">
             <i class="fas fa-info-circle mr-2"></i>
             Grafik akan menampilkan data historis dari 01 Januari 2019 sampai 21 Juni 2020, 
             ditambah prediksi sesuai pilihan Anda (3, 7, 30, atau 50 hari ke depan).
@@ -95,9 +95,9 @@
       <!-- Loading Indicator -->
       <div
         id="loading"
-        class="hidden brutal-card bg-cyan-400 p-4 mb-6"
+        class="hidden brutal-card bg-cyan-400 p-3 sm:p-4 mb-4 sm:mb-6"
       >
-        <p class="text-black font-bold uppercase">
+        <p class="text-black font-bold uppercase text-sm sm:text-base">
           <i class="fas fa-spinner fa-spin mr-2"></i>Sedang memproses
           prediksi...
         </p>
@@ -106,9 +106,9 @@
       <!-- Error Message -->
       <div
         id="error"
-        class="hidden brutal-card bg-red-500 p-4 mb-6"
+        class="hidden brutal-card bg-red-500 p-3 sm:p-4 mb-4 sm:mb-6"
       >
-        <p class="text-black font-bold uppercase">
+        <p class="text-black font-bold uppercase text-sm sm:text-base">
           <i class="fas fa-exclamation-circle mr-2"></i
           ><span id="errorMsg"></span>
         </p>
@@ -117,64 +117,64 @@
       <!-- Hasil Visualisasi -->
       <div id="results" class="hidden">
         <!-- Info Summary -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div class="brutal-card bg-black border-yellow-400 p-4">
-            <p class="text-gray-400 text-xs font-bold uppercase mb-2">Model</p>
-            <p class="text-2xl font-black text-yellow-400">SARIMAX</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <div class="brutal-card bg-black border-yellow-400 p-3 sm:p-4">
+            <p class="text-gray-400 text-xs font-bold uppercase mb-1 sm:mb-2">Model</p>
+            <p class="text-xl sm:text-2xl font-black text-yellow-400">SARIMAX</p>
           </div>
-          <div class="brutal-card bg-black border-green-400 p-4">
-            <p class="text-gray-400 text-xs font-bold uppercase mb-2">Data Historis</p>
-            <p class="text-sm font-bold text-green-400">01/01/2019 - 21/06/2020</p>
+          <div class="brutal-card bg-black border-green-400 p-3 sm:p-4">
+            <p class="text-gray-400 text-xs font-bold uppercase mb-1 sm:mb-2">Data Historis</p>
+            <p class="text-xs sm:text-sm font-bold text-green-400">01/01/2019 - 21/06/2020</p>
           </div>
-          <div class="brutal-card bg-black border-purple-400 p-4">
-            <p class="text-gray-400 text-xs font-bold uppercase mb-2">Periode Prediksi</p>
-            <p class="text-2xl font-black text-purple-400" id="predPeriod">-</p>
+          <div class="brutal-card bg-black border-purple-400 p-3 sm:p-4">
+            <p class="text-gray-400 text-xs font-bold uppercase mb-1 sm:mb-2">Periode Prediksi</p>
+            <p class="text-xl sm:text-2xl font-black text-purple-400" id="predPeriod">-</p>
           </div>
-          <div class="brutal-card bg-black border-orange-400 p-4">
-            <p class="text-gray-400 text-xs font-bold uppercase mb-2">Akhir Prediksi</p>
-            <p class="text-sm font-bold text-orange-400" id="endPredDate">-</p>
+          <div class="brutal-card bg-black border-orange-400 p-3 sm:p-4">
+            <p class="text-gray-400 text-xs font-bold uppercase mb-1 sm:mb-2">Akhir Prediksi</p>
+            <p class="text-xs sm:text-sm font-bold text-orange-400" id="endPredDate">-</p>
           </div>
         </div>
 
         <!-- Grafik -->
-        <div class="brutal-card bg-gradient-to-br from-cyan-400 to-blue-500 p-6 mb-6">
-          <h2 class="text-2xl font-black mb-6 uppercase text-black">
+        <div class="brutal-card bg-gradient-to-br from-cyan-400 to-blue-500 p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">
+          <h2 class="text-xl sm:text-2xl font-black mb-4 sm:mb-6 uppercase text-black">
             <i class="fas fa-chart-bar mr-2"></i>Grafik Data Historis & Prediksi
           </h2>
-          <div class="bg-white p-4 brutal-card">
-            <canvas id="predictionChart" class="w-full" height="80"></canvas>
+          <div class="bg-white p-2 sm:p-3 md:p-4 brutal-card overflow-x-auto">
+            <canvas id="predictionChart" class="w-full" style="max-height: 400px; height: 300px;"></canvas>
           </div>
         </div>
 
         <!-- Model Performance -->
-        <div class="brutal-card bg-gradient-to-br from-pink-400 to-purple-500 p-6 mb-6">
-          <h2 class="text-2xl font-black mb-6 uppercase text-black">
+        <div class="brutal-card bg-gradient-to-br from-pink-400 to-purple-500 p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">
+          <h2 class="text-xl sm:text-2xl font-black mb-4 sm:mb-6 uppercase text-black">
             <i class="fas fa-chart-pie mr-2"></i>Goodness of Fit Model
           </h2>
-          <div id="goodnessOfFit" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div id="goodnessOfFit" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             <!-- Will be populated by JS -->
           </div>
-          <div class="mt-6 bg-black brutal-card p-4">
-            <p class="text-pink-400 font-bold text-sm"><span class="text-white">INTERPRETASI:</span> AIC, BIC, dan HQIC semakin kecil menunjukkan model semakin optimal dan efisien.</p>
+          <div class="mt-4 sm:mt-6 bg-black brutal-card p-3 sm:p-4">
+            <p class="text-pink-400 font-bold text-xs sm:text-sm"><span class="text-white">INTERPRETASI:</span> AIC, BIC, dan HQIC semakin kecil menunjukkan model semakin optimal dan efisien.</p>
           </div>
         </div>
 
         <!-- Tabel Detail Prediksi -->
-        <div class="brutal-card bg-gradient-to-br from-yellow-400 to-orange-500 p-6">
-          <h2 class="text-2xl font-black mb-6 uppercase text-black">
+        <div class="brutal-card bg-gradient-to-br from-yellow-400 to-orange-500 p-4 sm:p-5 md:p-6">
+          <h2 class="text-xl sm:text-2xl font-black mb-4 sm:mb-6 uppercase text-black">
             <i class="fas fa-table mr-2"></i>Detail Hasil Prediksi
           </h2>
-          <div class="overflow-x-auto bg-white brutal-card p-4">
+          <div class="overflow-x-auto bg-white brutal-card p-2 sm:p-3 md:p-4 -mx-2 sm:mx-0">
             <table class="min-w-full divide-y-4 divide-black">
               <thead class="bg-black">
                 <tr>
-                  <th class="px-6 py-3 text-left text-xs font-black text-yellow-400 uppercase tracking-wider">
+                  <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-black text-yellow-400 uppercase tracking-wider">
                     No
                   </th>
-                  <th class="px-6 py-3 text-left text-xs font-black text-yellow-400 uppercase tracking-wider">
+                  <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-black text-yellow-400 uppercase tracking-wider whitespace-nowrap">
                     Tanggal
                   </th>
-                  <th class="px-6 py-3 text-left text-xs font-black text-yellow-400 uppercase tracking-wider">
+                  <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-black text-yellow-400 uppercase tracking-wider whitespace-nowrap">
                     Prediksi Transaksi
                   </th>
                 </tr>
@@ -354,9 +354,9 @@
             data.predictions.forEach((pred, index) => {
               const row = `
                 <tr class="${index % 2 === 0 ? "bg-white" : "bg-gray-100"}">
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-black">${index + 1}</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-black">${pred.date}</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-lg font-black text-yellow-600">
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-bold text-black">${index + 1}</td>
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-bold text-black">${pred.date}</td>
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-base sm:text-lg font-black text-yellow-600">
                     ${Math.round(pred.predicted_transactions).toLocaleString()}
                   </td>
                 </tr>

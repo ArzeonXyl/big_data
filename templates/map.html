@@ -13,54 +13,134 @@
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <style>
-  #map { height: 80vh; width: 100%; }
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&display=swap');
+  
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: #0a0a0a;
+    color: #fff;
+  }
+  
+  .brutal-card {
+    border: 4px solid #000;
+    box-shadow: 8px 8px 0 #000;
+  }
+  
+  .brutal-btn {
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0 #000;
+    transition: all 0.2s ease;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  
+  .brutal-btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 #000;
+  }
+  
+  .grid-bg {
+    background-image: 
+      linear-gradient(#1a1a1a 1px, transparent 1px),
+      linear-gradient(90deg, #1a1a1a 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  
+  #map { 
+    height: 60vh;
+    min-height: 400px;
+    width: 100%; 
+  }
+  
+  @media (min-width: 768px) {
+    #map { height: 70vh; }
+  }
+  
+  @media (min-width: 1024px) {
+    #map { height: 75vh; }
+  }
+  
   .legend i { width: 15px; height: 15px; display: inline-block; margin-right: 5px; }
 </style>
 </head>
-<body class="bg-gray-100">
+<body class="grid-bg">
 
 <!-- Include Navbar -->
 {% include 'navbar.html' %}
 
-<!-- Filter Controls -->
-<div class="p-4 bg-white shadow-md m-4 rounded-lg flex flex-wrap gap-2 items-center">
-  <div>
-    <label class="text-sm font-medium">Month:</label>
-    <select id="month" class="ml-1 px-2 py-1 border rounded">
-      <option value="">All</option>
-      {% for m in range(1,13) %}
-      <option value="{{m}}">{{m}}</option>
-      {% endfor %}
-    </select>
+<div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+  <!-- Header -->
+  <div class="mb-6 sm:mb-8">
+    <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-3 sm:mb-4 uppercase">
+      <span class="bg-gradient-to-r from-pink-400 to-purple-500 text-transparent bg-clip-text">
+        Geographic Map
+      </span>
+    </h1>
+    <p class="text-gray-400 text-sm sm:text-base md:text-lg font-bold">
+      Visualisasi interaktif data transaksi berdasarkan <span class="text-pink-400">zona geografis</span> dan <span class="text-purple-400">clustering</span>
+    </p>
   </div>
-  <div>
-    <label class="text-sm font-medium">Cluster Spend:</label>
-    <select id="cluster_spend" class="ml-1 px-2 py-1 border rounded">
-      <option value="">All</option>
-      <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option>
-    </select>
-  </div>
-  <div>
-    <label class="text-sm font-medium">Label Spend:</label>
-    <select id="label_spend" class="ml-1 px-2 py-1 border rounded"><option value="">All</option></select>
-  </div>
-  <div>
-    <label class="text-sm font-medium">Cluster Geo:</label>
-    <select id="cluster_geo" class="ml-1 px-2 py-1 border rounded">
-      <option value="">All</option>
-      <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option>
-    </select>
-  </div>
-  <div>
-    <label class="text-sm font-medium">Label Geo:</label>
-    <select id="label_geo" class="ml-1 px-2 py-1 border rounded"><option value="">All</option></select>
-  </div>
-  <button id="applyFilter" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Apply Filter</button>
-  <span id="total" class="ml-4 font-medium"></span>
-</div>
 
-<!-- Map -->
-<div id="map" class="rounded-lg shadow-md m-4"></div>
+  <!-- Filter Controls -->
+  <div class="brutal-card bg-gradient-to-br from-pink-400 to-purple-500 p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">
+    <h2 class="text-xl sm:text-2xl font-black mb-4 sm:mb-6 uppercase text-black">
+      <i class="fas fa-filter mr-2"></i>Filter Peta
+    </h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
+      <div>
+        <label class="block text-black font-bold mb-2 uppercase text-xs">Month</label>
+        <select id="month" class="w-full px-3 py-2 brutal-btn bg-black text-pink-400 cursor-pointer text-sm">
+          <option value="">All</option>
+          {% for m in range(1,13) %}
+          <option value="{{m}}">{{m}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label class="block text-black font-bold mb-2 uppercase text-xs">Cluster Spend</label>
+        <select id="cluster_spend" class="w-full px-3 py-2 brutal-btn bg-black text-pink-400 cursor-pointer text-sm">
+          <option value="">All</option>
+          <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-black font-bold mb-2 uppercase text-xs">Label Spend</label>
+        <select id="label_spend" class="w-full px-3 py-2 brutal-btn bg-black text-pink-400 cursor-pointer text-sm">
+          <option value="">All</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-black font-bold mb-2 uppercase text-xs">Cluster Geo</label>
+        <select id="cluster_geo" class="w-full px-3 py-2 brutal-btn bg-black text-pink-400 cursor-pointer text-sm">
+          <option value="">All</option>
+          <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-black font-bold mb-2 uppercase text-xs">Label Geo</label>
+        <select id="label_geo" class="w-full px-3 py-2 brutal-btn bg-black text-pink-400 cursor-pointer text-sm">
+          <option value="">All</option>
+        </select>
+      </div>
+      <div class="flex items-end">
+        <button id="applyFilter" class="w-full brutal-btn bg-black text-purple-400 hover:text-white px-4 py-2 cursor-pointer text-sm">
+          <i class="fas fa-search mr-2"></i>Filter
+        </button>
+      </div>
+    </div>
+    <div class="mt-4 bg-black brutal-card p-3">
+      <p class="text-pink-400 font-bold text-sm" id="total">Total records: -</p>
+    </div>
+  </div>
+
+  <!-- Map Container -->
+  <div class="brutal-card bg-gradient-to-br from-purple-400 to-pink-500 p-3 sm:p-4 md:p-6">
+    <h2 class="text-xl sm:text-2xl font-black mb-4 uppercase text-black">
+      <i class="fas fa-map-marked-alt mr-2"></i>Interactive Map
+    </h2>
+    <div id="map" class="brutal-card bg-white"></div>
+  </div>
+</div>
 
 <script>
 var map = L.map('map').setView([0,0], 2);
@@ -74,14 +154,6 @@ var clusterGeoColors = {0:'purple',1:'pink',2:'yellow',3:'brown'};
 
 // Merchant icon
 var merchantIcon = L.divIcon({html:'<i class="fa-solid fa-store text-red-600 text-xl"></i>', iconSize:[20,20], className:''});
-
-// Hamburger toggle (from navbar.html)
-if(document.getElementById('mobile-menu-button')){
-  document.getElementById('mobile-menu-button').addEventListener('click', function(){
-    const menu = document.getElementById('mobile-menu');
-    menu.classList.toggle('hidden');
-  });
-}
 
 function updateLabels(data){
     var labelsSpend = [...new Set(data.records_sample.map(d=>d.label))];
@@ -116,14 +188,25 @@ function renderMap(data){
 function addLegend(){
     var legend = L.control({position:'bottomright'});
     legend.onAdd = function(map){
-        var div = L.DomUtil.create('div','info legend p-2 bg-white rounded shadow-md');
-        div.innerHTML = '<b>Cluster Spend</b><br>';
+        var div = L.DomUtil.create('div','info legend');
+        div.style.cssText = 'background: white; padding: 10px; border: 4px solid black; box-shadow: 6px 6px 0 black; font-family: "Space Grotesk", sans-serif; font-weight: 700;';
+        
+        div.innerHTML = '<div style="color: black; font-weight: 900; margin-bottom: 8px; text-transform: uppercase; font-size: 12px;">Cluster Spend</div>';
+        var spendLabels = {0: 'Hemat & Moderat', 1: 'Boros & Moderat', 2: 'Hemat & Aktif', 3: 'Boros & Pasif'};
         for(var key in clusterSpendColors){
-            div.innerHTML += `<i style="background:${clusterSpendColors[key]}"></i> ${key}<br>`;
+            div.innerHTML += `<div style="margin: 4px 0; color: black; font-size: 11px;">
+                <i style="background:${clusterSpendColors[key]}; width: 18px; height: 18px; display: inline-block; margin-right: 6px; border: 2px solid black;"></i>
+                <span style="font-weight: 700;">${key}: ${spendLabels[key]}</span>
+            </div>`;
         }
-        div.innerHTML += '<b>Cluster Geo</b><br>';
+        
+        div.innerHTML += '<div style="color: black; font-weight: 900; margin-top: 12px; margin-bottom: 8px; text-transform: uppercase; font-size: 12px;">Cluster Geo</div>';
+        var geoLabels = {0: 'Dekat', 1: 'Jauh', 2: 'Sangat Dekat', 3: 'Sangat Jauh'};
         for(var key in clusterGeoColors){
-            div.innerHTML += `<i style="background:${clusterGeoColors[key]}"></i> ${key}<br>`;
+            div.innerHTML += `<div style="margin: 4px 0; color: black; font-size: 11px;">
+                <i style="background:${clusterGeoColors[key]}; width: 18px; height: 18px; display: inline-block; margin-right: 6px; border: 2px solid black;"></i>
+                <span style="font-weight: 700;">${key}: ${geoLabels[key]}</span>
+            </div>`;
         }
         return div;
     };
@@ -151,7 +234,22 @@ function loadData(){
 }
 
 $('#applyFilter').click(loadData);
-$(document).ready(function(){ loadData(); addLegend(); });
+$(document).ready(function(){ 
+  loadData(); 
+  addLegend(); 
+  
+  // Hamburger menu toggle - ensure it works on map page
+  const mobileMenuButton = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+  if(mobileMenuButton && mobileMenu){
+    mobileMenuButton.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      mobileMenu.classList.toggle('hidden');
+      console.log('Mobile menu toggled');
+    });
+  }
+});
 </script>
 </body>
 </html>
