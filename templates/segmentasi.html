@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Segmentasi - BigData Dashboard</title>
+    <title>Segmentation - BigData Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="stylesheet"
@@ -53,48 +53,48 @@
       <div class="mb-6 sm:mb-8">
         <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-3 sm:mb-4 uppercase">
           <span class="bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text">
-            Analisis Segmentasi
+            Segmentation Analysis
           </span>
         </h1>
         <p class="text-gray-400 text-sm sm:text-base md:text-lg font-bold">
-          Visualisasi dan analisis data segmentasi pelanggan berdasarkan <span class="text-cyan-400">spending</span> dan <span class="text-blue-400">geografis</span>
+          Visualization and analysis of customer segmentation based on <span class="text-cyan-400">spending</span> and <span class="text-blue-400">geographic</span> patterns
         </p>
       </div>
 
       <!-- Filter Controls -->
       <div class="brutal-card bg-gradient-to-br from-cyan-400 to-blue-500 p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">
         <h2 class="text-xl sm:text-2xl font-black mb-4 sm:mb-6 uppercase text-black">
-          <i class="fas fa-filter mr-2"></i>Filter Data
+          <i class="fas fa-filter mr-2"></i>Data Filter
         </h2>
         <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
           <div>
             <label class="block text-black font-bold mb-3 uppercase text-sm"
-              >Cluster Spend</label
+              >Spend Cluster</label
             >
             <select
               id="clusterSpend"
               class="w-full px-4 py-3 brutal-btn bg-black text-cyan-400 cursor-pointer"
             >
-              <option value="">Semua</option>
-              <option value="0">Hemat dan Moderat</option>
-              <option value="1">Boros dan Moderat</option>
-              <option value="2">Hemat dan Aktif</option>
-              <option value="3">Boros dan Pasif</option>
+              <option value="">All</option>
+              <option value="0">Frugal and Moderate</option>
+              <option value="1">High Spender and Moderate</option>
+              <option value="2">Frugal and Active</option>
+              <option value="3">High Spender and Passive</option>
             </select>
           </div>
           <div>
             <label class="block text-black font-bold mb-3 uppercase text-sm"
-              >Cluster Geo</label
+              >Geo Cluster</label
             >
             <select
               id="clusterGeo"
               class="w-full px-4 py-3 brutal-btn bg-black text-blue-400 cursor-pointer"
             >
-              <option value="">Semua</option>
-              <option value="0">Dekat</option>
-              <option value="1">Jauh</option>
-              <option value="2">Sangat Dekat</option>
-              <option value="3">Sangat Jauh</option>
+              <option value="">All</option>
+              <option value="0">Near</option>
+              <option value="1">Far</option>
+              <option value="2">Very Near</option>
+              <option value="3">Very Far</option>
             </select>
           </div>
           <div class="flex items-end">
@@ -102,7 +102,7 @@
               onclick="loadSegmentationData()"
               class="w-full brutal-btn bg-black text-cyan-400 hover:text-white px-6 py-3 cursor-pointer"
             >
-              <i class="fas fa-search mr-2"></i>Tampilkan Data
+              <i class="fas fa-search mr-2"></i>Show Data
             </button>
           </div>
         </div>
@@ -114,7 +114,7 @@
         class="hidden brutal-card bg-cyan-400 p-3 sm:p-4 mb-4 sm:mb-6"
       >
         <p class="text-black font-bold uppercase text-sm sm:text-base">
-          <i class="fas fa-spinner fa-spin mr-2"></i>Memuat data...
+          <i class="fas fa-spinner fa-spin mr-2"></i>Loading data...
         </p>
       </div>
 
@@ -185,20 +185,20 @@
       <!-- Charts Section -->
       <div id="chartsSection" class="hidden">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
-          <!-- Cluster Spend Distribution -->
+          <!-- Spend Cluster Distribution -->
           <div class="brutal-card bg-gradient-to-br from-cyan-400 to-blue-500 p-4 sm:p-5 md:p-6">
             <h3 class="text-base sm:text-lg font-black mb-3 sm:mb-4 uppercase text-black">
-              <i class="fas fa-chart-pie mr-2"></i>Distribusi Cluster Spend
+              <i class="fas fa-chart-pie mr-2"></i>Spend Cluster Distribution
             </h3>
             <div class="bg-white p-2 sm:p-3 brutal-card">
               <canvas id="clusterSpendChart"></canvas>
             </div>
           </div>
 
-          <!-- Cluster Geo Distribution -->
+          <!-- Geo Cluster Distribution -->
           <div class="brutal-card bg-gradient-to-br from-blue-400 to-purple-500 p-4 sm:p-5 md:p-6">
             <h3 class="text-base sm:text-lg font-black mb-3 sm:mb-4 uppercase text-black">
-              <i class="fas fa-chart-pie mr-2"></i>Distribusi Cluster Geo
+              <i class="fas fa-chart-pie mr-2"></i>Geo Cluster Distribution
             </h3>
             <div class="bg-white p-2 sm:p-3 brutal-card">
               <canvas id="clusterGeoChart"></canvas>
@@ -207,20 +207,20 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
-          <!-- Label Spend Distribution -->
+          <!-- Spend Label Distribution -->
           <div class="brutal-card bg-gradient-to-br from-yellow-400 to-orange-500 p-4 sm:p-5 md:p-6">
             <h3 class="text-base sm:text-lg font-black mb-3 sm:mb-4 uppercase text-black">
-              <i class="fas fa-chart-bar mr-2"></i>Distribusi Label Spend
+              <i class="fas fa-chart-bar mr-2"></i>Spend Label Distribution
             </h3>
             <div class="bg-white p-2 sm:p-3 brutal-card">
               <canvas id="labelSpendChart"></canvas>
             </div>
           </div>
 
-          <!-- Label Geo Distribution -->
+          <!-- Geo Label Distribution -->
           <div class="brutal-card bg-gradient-to-br from-pink-400 to-purple-500 p-4 sm:p-5 md:p-6">
             <h3 class="text-base sm:text-lg font-black mb-3 sm:mb-4 uppercase text-black">
-              <i class="fas fa-chart-bar mr-2"></i>Distribusi Label Geo
+              <i class="fas fa-chart-bar mr-2"></i>Geo Label Distribution
             </h3>
             <div class="bg-white p-2 sm:p-3 brutal-card">
               <canvas id="labelGeoChart"></canvas>
@@ -232,7 +232,7 @@
       <!-- Data Table -->
       <div id="tableSection" class="hidden brutal-card bg-gradient-to-br from-green-400 to-cyan-500 p-4 sm:p-5 md:p-6">
         <h2 class="text-lg sm:text-xl font-black mb-3 sm:mb-4 uppercase text-black">
-          <i class="fas fa-table mr-2"></i>Sample Data (100 records pertama)
+          <i class="fas fa-table mr-2"></i>Sample Data (First 100 records)
         </h2>
         <div class="overflow-x-auto bg-white brutal-card p-2 sm:p-3 -mx-2 sm:mx-0">
           <table class="min-w-full divide-y-4 divide-black">
@@ -349,13 +349,13 @@
           .catch((error) => {
             document.getElementById("loading").classList.add("hidden");
             document.getElementById("errorMsg").textContent =
-              "Terjadi kesalahan: " + error.message;
+              "Error occurred: " + error.message;
             document.getElementById("error").classList.remove("hidden");
           });
       }
 
       function updateCharts(summary) {
-        // Cluster Spend Chart
+        // Spend Cluster Chart
         const spendLabels = Object.keys(summary.cluster_spend_counts);
         const spendData = Object.values(summary.cluster_spend_counts);
 
@@ -382,7 +382,7 @@
           }
         );
 
-        // Cluster Geo Chart
+        // Geo Cluster Chart
         const geoLabels = Object.keys(summary.cluster_geo_counts);
         const geoData = Object.values(summary.cluster_geo_counts);
 
@@ -409,7 +409,7 @@
           }
         );
 
-        // Label Spend Chart
+        // Spend Label Chart
         const labelSpendLabels = Object.keys(summary.label_spend_counts);
         const labelSpendData = Object.values(summary.label_spend_counts);
 
@@ -422,7 +422,7 @@
               labels: labelSpendLabels,
               datasets: [
                 {
-                  label: "Jumlah",
+                  label: "Count",
                   data: labelSpendData,
                   backgroundColor: "#3B82F6",
                 },
@@ -437,7 +437,7 @@
           }
         );
 
-        // Label Geo Chart
+        // Geo Label Chart
         const labelGeoLabels = Object.keys(summary.label_geo_counts);
         const labelGeoData = Object.values(summary.label_geo_counts);
 
@@ -448,7 +448,7 @@
             labels: labelGeoLabels,
             datasets: [
               {
-                label: "Jumlah",
+                label: "Count",
                 data: labelGeoData,
                 backgroundColor: "#8B5CF6",
               },

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interactive Map - Segmentasi</title>
+<title>Interactive Map - Segmentation</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css"/>
@@ -77,14 +77,14 @@
       </span>
     </h1>
     <p class="text-gray-400 text-sm sm:text-base md:text-lg font-bold">
-      Visualisasi interaktif data transaksi berdasarkan <span class="text-pink-400">zona geografis</span> dan <span class="text-purple-400">clustering</span>
+      Interactive visualization of transaction data based on <span class="text-pink-400">geographic zones</span> and <span class="text-purple-400">clustering</span>
     </p>
   </div>
 
   <!-- Filter Controls -->
   <div class="brutal-card bg-gradient-to-br from-pink-400 to-purple-500 p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">
     <h2 class="text-xl sm:text-2xl font-black mb-4 sm:mb-6 uppercase text-black">
-      <i class="fas fa-filter mr-2"></i>Filter Peta
+      <i class="fas fa-filter mr-2"></i>Map Filter
     </h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
       <div>
@@ -97,27 +97,27 @@
         </select>
       </div>
       <div>
-        <label class="block text-black font-bold mb-2 uppercase text-xs">Cluster Spend</label>
+        <label class="block text-black font-bold mb-2 uppercase text-xs">Spend Cluster</label>
         <select id="cluster_spend" class="w-full px-3 py-2 brutal-btn bg-black text-pink-400 cursor-pointer text-sm">
           <option value="">All</option>
           <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option>
         </select>
       </div>
       <div>
-        <label class="block text-black font-bold mb-2 uppercase text-xs">Label Spend</label>
+        <label class="block text-black font-bold mb-2 uppercase text-xs">Spend Label</label>
         <select id="label_spend" class="w-full px-3 py-2 brutal-btn bg-black text-pink-400 cursor-pointer text-sm">
           <option value="">All</option>
         </select>
       </div>
       <div>
-        <label class="block text-black font-bold mb-2 uppercase text-xs">Cluster Geo</label>
+        <label class="block text-black font-bold mb-2 uppercase text-xs">Geo Cluster</label>
         <select id="cluster_geo" class="w-full px-3 py-2 brutal-btn bg-black text-pink-400 cursor-pointer text-sm">
           <option value="">All</option>
           <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option>
         </select>
       </div>
       <div>
-        <label class="block text-black font-bold mb-2 uppercase text-xs">Label Geo</label>
+        <label class="block text-black font-bold mb-2 uppercase text-xs">Geo Label</label>
         <select id="label_geo" class="w-full px-3 py-2 brutal-btn bg-black text-pink-400 cursor-pointer text-sm">
           <option value="">All</option>
         </select>
@@ -191,8 +191,8 @@ function addLegend(){
         var div = L.DomUtil.create('div','info legend');
         div.style.cssText = 'background: white; padding: 10px; border: 4px solid black; box-shadow: 6px 6px 0 black; font-family: "Space Grotesk", sans-serif; font-weight: 700;';
         
-        div.innerHTML = '<div style="color: black; font-weight: 900; margin-bottom: 8px; text-transform: uppercase; font-size: 12px;">Cluster Spend</div>';
-        var spendLabels = {0: 'Hemat & Moderat', 1: 'Boros & Moderat', 2: 'Hemat & Aktif', 3: 'Boros & Pasif'};
+        div.innerHTML = '<div style="color: black; font-weight: 900; margin-bottom: 8px; text-transform: uppercase; font-size: 12px;">Spend Cluster</div>';
+        var spendLabels = {0: 'Frugal & Moderate', 1: 'High Spender & Moderate', 2: 'Frugal & Active', 3: 'High Spender & Passive'};
         for(var key in clusterSpendColors){
             div.innerHTML += `<div style="margin: 4px 0; color: black; font-size: 11px;">
                 <i style="background:${clusterSpendColors[key]}; width: 18px; height: 18px; display: inline-block; margin-right: 6px; border: 2px solid black;"></i>
@@ -200,8 +200,8 @@ function addLegend(){
             </div>`;
         }
         
-        div.innerHTML += '<div style="color: black; font-weight: 900; margin-top: 12px; margin-bottom: 8px; text-transform: uppercase; font-size: 12px;">Cluster Geo</div>';
-        var geoLabels = {0: 'Dekat', 1: 'Jauh', 2: 'Sangat Dekat', 3: 'Sangat Jauh'};
+        div.innerHTML += '<div style="color: black; font-weight: 900; margin-top: 12px; margin-bottom: 8px; text-transform: uppercase; font-size: 12px;">Geo Cluster</div>';
+        var geoLabels = {0: 'Near', 1: 'Far', 2: 'Very Near', 3: 'Very Far'};
         for(var key in clusterGeoColors){
             div.innerHTML += `<div style="margin: 4px 0; color: black; font-size: 11px;">
                 <i style="background:${clusterGeoColors[key]}; width: 18px; height: 18px; display: inline-block; margin-right: 6px; border: 2px solid black;"></i>
