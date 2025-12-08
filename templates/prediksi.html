@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Prediksi - BigData Dashboard</title>
+    <title>Prediction - BigData Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="stylesheet"
@@ -53,41 +53,41 @@
       <div class="mb-6 sm:mb-8">
         <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-3 sm:mb-4 uppercase">
           <span class="bg-gradient-to-r from-yellow-400 to-orange-500 text-transparent bg-clip-text">
-            Prediksi Transaksi
+            Transaction Prediction
           </span>
         </h1>
         <p class="text-gray-400 text-sm sm:text-base md:text-lg font-bold">
-          Data historis: <span class="text-yellow-400">01 Januari 2019 - 21 Juni 2020</span> dengan prediksi ke depan
+          Historical data: <span class="text-yellow-400">01 January 2019 - 21 June 2020</span> with forward prediction
         </p>
       </div>
 
-      <!-- Form Dropdown Prediksi -->
+      <!-- Prediction Period Form -->
       <div class="brutal-card bg-gradient-to-br from-yellow-400 to-orange-500 p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">
         <h2 class="text-xl sm:text-2xl font-black mb-4 sm:mb-6 uppercase text-black">
-          <i class="fas fa-chart-line mr-2"></i>Pilih Periode Prediksi
+          <i class="fas fa-chart-line mr-2"></i>Select Prediction Period
         </h2>
 
         <div class="mb-4 sm:mb-6">
           <label class="block text-black font-bold mb-2 sm:mb-3 uppercase text-xs sm:text-sm" for="predictionDays">
-            Prediksi untuk berapa hari ke depan?
+            Predict how many days ahead?
           </label>
           <select
             id="predictionDays"
             onchange="updatePrediction()"
             class="w-full sm:w-full md:w-80 lg:w-96 px-3 sm:px-4 py-2 sm:py-3 brutal-btn bg-black text-yellow-400 cursor-pointer text-base sm:text-lg"
           >
-            <option value="3">3 Hari</option>
-            <option value="7" selected>7 Hari</option>
-            <option value="30">30 Hari</option>
-            <option value="50">50 Hari</option>
+            <option value="3">3 Days</option>
+            <option value="7" selected>7 Days</option>
+            <option value="30">30 Days</option>
+            <option value="50">50 Days</option>
           </select>
         </div>
 
         <div class="bg-black text-yellow-400 brutal-card p-3 sm:p-4">
           <p class="text-xs sm:text-sm font-bold">
             <i class="fas fa-info-circle mr-2"></i>
-            Grafik akan menampilkan data historis dari 01 Januari 2019 sampai 21 Juni 2020, 
-            ditambah prediksi sesuai pilihan Anda (3, 7, 30, atau 50 hari ke depan).
+            The chart will display historical data from 01 January 2019 to 21 June 2020,
+            plus prediction according to your selection (3, 7, 30, or 50 days ahead).
           </p>
         </div>
       </div>
@@ -98,8 +98,7 @@
         class="hidden brutal-card bg-cyan-400 p-3 sm:p-4 mb-4 sm:mb-6"
       >
         <p class="text-black font-bold uppercase text-sm sm:text-base">
-          <i class="fas fa-spinner fa-spin mr-2"></i>Sedang memproses
-          prediksi...
+          <i class="fas fa-spinner fa-spin mr-2"></i>Processing prediction...
         </p>
       </div>
 
@@ -114,7 +113,7 @@
         </p>
       </div>
 
-      <!-- Hasil Visualisasi -->
+      <!-- Visualization Results -->
       <div id="results" class="hidden">
         <!-- Info Summary -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
@@ -123,23 +122,23 @@
             <p class="text-xl sm:text-2xl font-black text-yellow-400">SARIMAX</p>
           </div>
           <div class="brutal-card bg-black border-green-400 p-3 sm:p-4">
-            <p class="text-gray-400 text-xs font-bold uppercase mb-1 sm:mb-2">Data Historis</p>
+            <p class="text-gray-400 text-xs font-bold uppercase mb-1 sm:mb-2">Historical Data</p>
             <p class="text-xs sm:text-sm font-bold text-green-400">01/01/2019 - 21/06/2020</p>
           </div>
           <div class="brutal-card bg-black border-purple-400 p-3 sm:p-4">
-            <p class="text-gray-400 text-xs font-bold uppercase mb-1 sm:mb-2">Periode Prediksi</p>
+            <p class="text-gray-400 text-xs font-bold uppercase mb-1 sm:mb-2">Prediction Period</p>
             <p class="text-xl sm:text-2xl font-black text-purple-400" id="predPeriod">-</p>
           </div>
           <div class="brutal-card bg-black border-orange-400 p-3 sm:p-4">
-            <p class="text-gray-400 text-xs font-bold uppercase mb-1 sm:mb-2">Akhir Prediksi</p>
+            <p class="text-gray-400 text-xs font-bold uppercase mb-1 sm:mb-2">Prediction End Date</p>
             <p class="text-xs sm:text-sm font-bold text-orange-400" id="endPredDate">-</p>
           </div>
         </div>
 
-        <!-- Grafik -->
+        <!-- Chart -->
         <div class="brutal-card bg-gradient-to-br from-cyan-400 to-blue-500 p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">
           <h2 class="text-xl sm:text-2xl font-black mb-4 sm:mb-6 uppercase text-black">
-            <i class="fas fa-chart-bar mr-2"></i>Grafik Data Historis & Prediksi
+            <i class="fas fa-chart-bar mr-2"></i>Historical Data & Prediction Chart
           </h2>
           <div class="bg-white p-2 sm:p-3 md:p-4 brutal-card overflow-x-auto">
             <canvas id="predictionChart" class="w-full" style="max-height: 400px; height: 300px;"></canvas>
@@ -155,14 +154,14 @@
             <!-- Will be populated by JS -->
           </div>
           <div class="mt-4 sm:mt-6 bg-black brutal-card p-3 sm:p-4">
-            <p class="text-pink-400 font-bold text-xs sm:text-sm"><span class="text-white">INTERPRETASI:</span> AIC, BIC, dan HQIC semakin kecil menunjukkan model semakin optimal dan efisien.</p>
+            <p class="text-pink-400 font-bold text-xs sm:text-sm"><span class="text-white">INTERPRETATION:</span> Lower AIC, BIC, and HQIC values indicate a more optimal and efficient model.</p>
           </div>
         </div>
 
-        <!-- Tabel Detail Prediksi -->
+        <!-- Prediction Details Table -->
         <div class="brutal-card bg-gradient-to-br from-yellow-400 to-orange-500 p-4 sm:p-5 md:p-6">
           <h2 class="text-xl sm:text-2xl font-black mb-4 sm:mb-6 uppercase text-black">
-            <i class="fas fa-table mr-2"></i>Detail Hasil Prediksi
+            <i class="fas fa-table mr-2"></i>Prediction Results Details
           </h2>
           <div class="overflow-x-auto bg-white brutal-card p-2 sm:p-3 md:p-4 -mx-2 sm:mx-0">
             <table class="min-w-full divide-y-4 divide-black">
@@ -172,10 +171,10 @@
                     No
                   </th>
                   <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-black text-yellow-400 uppercase tracking-wider whitespace-nowrap">
-                    Tanggal
+                    Date
                   </th>
                   <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-black text-yellow-400 uppercase tracking-wider whitespace-nowrap">
-                    Prediksi Transaksi
+                    Transaction Prediction
                   </th>
                 </tr>
               </thead>
@@ -189,7 +188,7 @@
     <script>
       let predictionChart = null;
 
-      // Load data awal saat halaman dimuat
+      // Load initial data when page loads
       window.addEventListener('DOMContentLoaded', () => {
         updatePrediction();
       });
@@ -224,7 +223,7 @@
             }
 
             // Update info
-            document.getElementById("predPeriod").textContent = days + " Hari";
+            document.getElementById("predPeriod").textContent = days + " Days";
             const lastPredDate = data.predictions[data.predictions.length - 1].date;
             document.getElementById("endPredDate").textContent = lastPredDate;
 
@@ -253,24 +252,24 @@
               `;
             }
 
-            // Prepare chart data - gabungkan historical + predictions
+            // Prepare chart data - combine historical + predictions
             let allLabels = [];
             let historicalValues = [];
             let predictionValues = [];
             
-            // Data historis dari 01-01-2019 sampai 21-06-2020
+            // Historical data from 01-01-2019 to 21-06-2020
             if (data.historical && data.historical.length > 0) {
               data.historical.forEach((h) => {
                 allLabels.push(h.date);
                 historicalValues.push(h.transactions);
-                predictionValues.push(null); // null untuk historical
+                predictionValues.push(null); // null for historical
               });
             }
             
-            // Data prediksi setelah 21-06-2020
+            // Prediction data after 21-06-2020
             data.predictions.forEach((p) => {
               allLabels.push(p.date);
-              historicalValues.push(null); // null untuk prediksi
+              historicalValues.push(null); // null for prediction
               predictionValues.push(p.predicted_transactions);
             });
 
@@ -286,7 +285,7 @@
                 labels: allLabels,
                 datasets: [
                   {
-                    label: "Data Historis",
+                    label: "Historical Data",
                     data: historicalValues,
                     borderColor: "rgb(34, 197, 94)",
                     backgroundColor: "rgba(34, 197, 94, 0.1)",
@@ -296,7 +295,7 @@
                     pointRadius: 0,
                   },
                   {
-                    label: "Prediksi Transaksi",
+                    label: "Transaction Prediction",
                     data: predictionValues,
                     borderColor: "rgb(59, 130, 246)",
                     backgroundColor: "rgba(59, 130, 246, 0.1)",
@@ -319,7 +318,7 @@
                   },
                   title: {
                     display: true,
-                    text: "Grafik Data Historis & Prediksi Transaksi",
+                    text: "Historical Data & Transaction Prediction Chart",
                     font: {
                       size: 16
                     }
@@ -330,13 +329,13 @@
                     beginAtZero: true,
                     title: {
                       display: true,
-                      text: "Jumlah Transaksi",
+                      text: "Transaction Count",
                     },
                   },
                   x: {
                     title: {
                       display: true,
-                      text: "Tanggal",
+                      text: "Date",
                     },
                     ticks: {
                       maxTicksLimit: 20,
@@ -369,7 +368,7 @@
           })
           .catch((error) => {
             document.getElementById("loading").classList.add("hidden");
-            document.getElementById("errorMsg").textContent = "Terjadi kesalahan: " + error.message;
+            document.getElementById("errorMsg").textContent = "Error occurred: " + error.message;
             document.getElementById("error").classList.remove("hidden");
           });
       }
