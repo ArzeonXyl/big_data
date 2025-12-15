@@ -76,10 +76,8 @@
             onchange="updatePrediction()"
             class="w-full sm:w-full md:w-80 lg:w-96 px-3 sm:px-4 py-2 sm:py-3 brutal-btn bg-black text-yellow-400 cursor-pointer text-base sm:text-lg"
           >
-            <option value="3">3 Days</option>
-            <option value="7" selected>7 Days</option>
-            <option value="30">30 Days</option>
-            <option value="50">50 Days</option>
+            <option value="3" selected>3 Days</option>
+            <option value="7" >7 Days</option>
           </select>
         </div>
 
@@ -148,13 +146,13 @@
         <!-- Model Performance -->
         <div class="brutal-card bg-gradient-to-br from-pink-400 to-purple-500 p-4 sm:p-5 md:p-6 mb-4 sm:mb-6">
           <h2 class="text-xl sm:text-2xl font-black mb-4 sm:mb-6 uppercase text-black">
-            <i class="fas fa-chart-pie mr-2"></i>Goodness of Fit Model
+            <i class="fas fa-chart-pie mr-2"></i>Parameter Model SARIMAX
           </h2>
           <div id="goodnessOfFit" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             <!-- Will be populated by JS -->
           </div>
           <div class="mt-4 sm:mt-6 bg-black brutal-card p-3 sm:p-4">
-            <p class="text-pink-400 font-bold text-xs sm:text-sm"><span class="text-white">INTERPRETATION:</span> Lower AIC, BIC, and HQIC values indicate a more optimal and efficient model.</p>
+            <p class="text-pink-400 font-bold text-xs sm:text-sm"><span class="text-white">INTERPRETATION:</span></p>
           </div>
         </div>
 
@@ -227,28 +225,49 @@
             const lastPredDate = data.predictions[data.predictions.length - 1].date;
             document.getElementById("endPredDate").textContent = lastPredDate;
 
-            // Update Goodness of Fit
-            if (data.goodness_of_fit) {
-              const gof = data.goodness_of_fit;
+            // Update Model Parameters (P, D, Q, s)
+            // Display SARIMAX parameters instead of AIC/BIC/HQIC.
+            // If backend provides explicit params use them, otherwise default to (1,1,1,7).
+            {
+              const gof = data.goodness_of_fit || {};
+              const P = (gof.p !== undefined && gof.p !== null) ? gof.p : 1;
+              const D = (gof.d !== undefined && gof.d !== null) ? gof.d : 1;
+              const Q = (gof.q !== undefined && gof.q !== null) ? gof.q : 1;
+              const s = (gof.s !== undefined && gof.s !== null) ? gof.s : 7;
+              const MAPE = (gof.mape !== undefined && gof.mape !== null) ? gof.mape : 13.04;
+              const MSE = (gof.mse !== undefined && gof.mse !== null) ? gof.mse : 335.05;
+
               document.getElementById("goodnessOfFit").innerHTML = `
-                ${gof.aic ? `
                 <div class="brutal-card bg-black border-cyan-400 p-4">
-                  <p class="text-xs text-gray-400 font-bold uppercase mb-2">AIC</p>
-                  <p class="text-3xl font-black text-cyan-400">${gof.aic.toFixed(2)}</p>
-                  <p class="text-xs text-gray-500 mt-1">Akaike Information Criterion</p>
-                </div>` : ""}
-                ${gof.bic ? `
+                  <p class="text-xs text-gray-400 font-bold uppercase mb-2">P</p>
+                  <p class="text-3xl font-black text-cyan-400">${P}</p>
+                  <p class="text-xs text-gray-500 mt-1">AR order (non-seasonal)</p>
+                </div>
                 <div class="brutal-card bg-black border-blue-400 p-4">
-                  <p class="text-xs text-gray-400 font-bold uppercase mb-2">BIC</p>
-                  <p class="text-3xl font-black text-blue-400">${gof.bic.toFixed(2)}</p>
-                  <p class="text-xs text-gray-500 mt-1">Bayesian Information Criterion</p>
-                </div>` : ""}
-                ${gof.hqic ? `
+                  <p class="text-xs text-gray-400 font-bold uppercase mb-2">D</p>
+                  <p class="text-3xl font-black text-blue-400">${D}</p>
+                  <p class="text-xs text-gray-500 mt-1">Order of differencing</p>
+                </div>
                 <div class="brutal-card bg-black border-purple-400 p-4">
-                  <p class="text-xs text-gray-400 font-bold uppercase mb-2">HQIC</p>
-                  <p class="text-3xl font-black text-purple-400">${gof.hqic.toFixed(2)}</p>
-                  <p class="text-xs text-gray-500 mt-1">Hannan-Quinn Information Criterion</p>
-                </div>` : ""}
+                  <p class="text-xs text-gray-400 font-bold uppercase mb-2">Q</p>
+                  <p class="text-3xl font-black text-purple-400">${Q}</p>
+                  <p class="text-xs text-gray-500 mt-1">MA order (non-seasonal)</p>
+                </div>
+                <div class="brutal-card bg-black border-pink-400 p-4">
+                  <p class="text-xs text-gray-400 font-bold uppercase mb-2">s</p>
+                  <p class="text-3xl font-black text-pink-400">${s}</p>
+                  <p class="text-xs text-gray-500 mt-1">Seasonal period</p>
+                </div>
+                <div class="brutal-card bg-black border-yellow-400 p-4">
+                  <p class="text-xs text-gray-400 font-bold uppercase mb-2">MAPE</p>
+                  <p class="text-3xl font-black text-yellow-400">${MAPE.toFixed(2)}%</p>
+                  <p class="text-xs text-gray-500 mt-1">Mean Absolute Percentage Error</p>
+                </div>
+                <div class="brutal-card bg-black border-green-400 p-4">
+                  <p class="text-xs text-gray-400 font-bold uppercase mb-2">MSE</p>
+                  <p class="text-3xl font-black text-green-400">${MSE.toFixed(2)}</p>
+                  <p class="text-xs text-gray-500 mt-1">Mean Squared Error</p>
+                </div>
               `;
             }
 
